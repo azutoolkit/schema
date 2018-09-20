@@ -94,7 +94,7 @@ module Contract
 
           {% for key, expected_value in options %}
             {% if Contract::VALIDATOR.keys.includes?(key) %}
-            rules << Contract.validator_for(key, {{name.id.stringify}}, @{{name.id}}, {{options[key]}})
+            rules << Contract.validator_for(:{{key}}, {{name.id.stringify}}, @{{name.id}}, {{options[key]}}, {{options[:message]}})
             {% end %}
           {% end %}
         {% end %}

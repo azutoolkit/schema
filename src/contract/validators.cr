@@ -15,7 +15,7 @@ module Contract
     length: Length,
   }
 
-  def self.validator_for(kind, field, value, expected_value, message : String? = nil)
-    VALIDATOR[kind].new(field, value, expected_value, message)
+  def self.validator_for(key, field, value, expected_value, message : String? = nil)
+    VALIDATOR[key].new(field, value, expected_value, message)
   end
 end

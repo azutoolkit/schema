@@ -1,0 +1,9 @@
+name: contracts
+version: 0.1.0
+
+authors:
+  - Elias J. Perez <eliasjpr@gmail.com>
+
+crystal: 0.26.1
+
+license: MIT

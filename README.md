@@ -1,11 +1,9 @@
 # Contracts
 
-Contracts comes to solve a simple problem. Sometimes we would like to have type safe
-guarantee params when parsing HTTP parameters or Hash(String, String) for a request 
-and Contracts are to resolve exactly this problem with the added benefit of performing 
-business rules validation having the params to adhere to a contract.
+Contracts come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Contracts are to resolve precisely this problem with the added benefit of performing 
+business rules validation to have the params adhere to a `"business contract"`.
 
-Contracts are very useful, in my opinion ideal, for when defining web services APIs.
+Contracts are beneficial, in my opinion, ideal, for when defining web services APIs
 
 ## Installation
 
@@ -54,6 +52,12 @@ params = HTTP::Params.parse(
 )
 
 subject = ExampleController.new(params.to_h)
+```
+
+Contracts are defined as value objects, meaning structs, which are NOT mutable, 
+making them ideal to pass contract object as arguments to constructors.
+
+```crystal
 user = subject.user
 address = user.address
 
@@ -87,7 +91,7 @@ end
 
 This is WIP.
 
-Create a module that extends from Validation. 
+Create a module that extends from contract Validators module. 
 
 ```crystal
 module Validators
@@ -99,12 +103,12 @@ module Validators
 end
 
 contract("User") do 
-  param name : String, eq: "John
+  param name : String, eq: "John"
 end
 ```
 
 Notice that `eq:` corresponds to `eq?`. 
-This is how you can use custom validatins
+This is how the library know which validation to perform.
 
 ## Development
 

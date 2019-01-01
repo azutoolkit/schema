@@ -31,7 +31,6 @@ describe "Contract::Definition" do
     subject.alive.should eq true
     subject.childrens.should eq ["Child 1", "Child 2"]
     subject.childrens_ages.should eq [9, 12]
-
     subject.valid?.should be_truthy
   end
 end

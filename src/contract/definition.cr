@@ -1,15 +1,8 @@
 module Definition
-  TIME_FORMAT_REGEX = /\d{4,}-\d{2,}-\d{2,}\s\d{2,}:\d{2,}:\d{2,}/
-  DATETIME_FORMAT   = "%F %X%z"
-
   macro param(attribute, **options)
     {% FIELD_OPTIONS[attribute.var] = options %}
     {% CONTENT_attributes[attribute.var] = options || {} of Nil => Nil %}
     {% CONTENT_attributes[attribute.var][:type] = attribute.type %}
-  end
-
-  macro param!(attribute, **options)
-    param {{attribute}}, {{options.double_splat(", ")}}raise_on_nil: true
   end
 
   macro included
@@ -22,10 +15,7 @@ module Definition
   end
 
   private macro __process_params
-    {% types = [] of Class %}
-
     {% for name, options in FIELD_OPTIONS %}
-      {% types << options[:type] %}
       {% type = options[:type] %}
       {% property_name = name.id %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
@@ -54,6 +44,7 @@ module Definition
     {% end %}
 
     getter rules = Rules.new
+    getter params : Hash(String, String)
 
     {% properties = FIELD_OPTIONS.keys.map { |p| p.id } %}
     def_equals_and_hash {{*properties}}
@@ -62,16 +53,20 @@ module Definition
       {% for name, options in FIELD_OPTIONS %}
         {% field_type = CONTENT_attributes[name][:type] %}
         {% key = name.id %}
+        field_{{name.id}} =
+          @params[{{key.stringify}}]? || @params["#{self.class.name.split("::").last.downcase}.{{key}}"]
+
 
         {% if field_type.is_a?(Generic) %}
           {% sub_type = field_type.type_vars %}
-          @{{name.id}} = @params[{{key.stringify}}].split(",").map do |item|
+          @{{name.id}} = field_{{name.id}}.split(",").map do |item|
             Contract::ConvertTo({{sub_type.join('|').id}}).new(item).value
           end
         {% else %}
-          @{{name.id}} = Contract::ConvertTo({{field_type}}).new(@params[{{key.stringify}}]).value
+          @{{name.id}} = Contract::ConvertTo({{field_type}}).new(field_{{name.id}}).value
         {% end %}
       {% end %}
+
       load_contract_rules
     end
 

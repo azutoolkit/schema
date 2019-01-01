@@ -13,7 +13,5 @@ require "./contract/contract_macro"
 module Contract
   include Validators
 
-  alias Key = String | Symbol
-
   VERSION = "0.1.0"
 end

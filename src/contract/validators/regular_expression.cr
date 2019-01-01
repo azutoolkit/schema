@@ -1,11 +1,7 @@
 module Validators
-  class RegularExpression < Validators::Validator
-    def valid?
-      match(value).match(expected_value)
-    end
-
-    def message
-      @message || "must match #{expected_value}"
+  module RegularExpression
+    def match?(value : String, regex : Regex)
+      !value.match(regex).nil?
     end
   end
 end

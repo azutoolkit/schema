@@ -1,11 +1,11 @@
 module Validators
-  class LessThanOrEqual < Validator
-    def valid?
-      value.as(Number) < expected_value.as(Number)
+  module LessThanOrEqual
+    def lte?(value : Int, compare : Int)
+      value <= compare
     end
 
-    def message
-      @message || "must be less or equal to #{expected_value}"
+    def lte?(value : Float, compare : Float)
+      value <= compare
     end
   end
 end

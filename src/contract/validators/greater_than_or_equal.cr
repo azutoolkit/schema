@@ -1,11 +1,11 @@
 module Validators
-  class GreaterThanOrEqual < Validator
-    def valid?
-      value.as(Number) >= expected_value.as(Number)
+  module GreaterThanOrEqual
+    def gte?(value : Int, compare : Int)
+      value >= compare
     end
 
-    def message
-      @message || "must be greater or equal to #{expected_value}"
+    def gte?(value : Float, compare : Float)
+      value >= compare
     end
   end
 end

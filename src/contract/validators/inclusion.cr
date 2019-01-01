@@ -1,25 +1,11 @@
 module Validators
-  class Inclusion < Validator
-    def valid?
-      case expected_value
-      when Array
-        case value
-        when String  then expected_value.as(Array(String)).includes?(value.as(String))
-        when Int32   then expected_value.as(Array(String)).includes?(value.as(Int32))
-        when Float32 then expected_value.as(Array(String)).includes?(value.as(Float32))
-        end
-      when Range
-        case value
-        when Int32   then expected_value.as(Range).includes?(value.as(Int32))
-        when Float32 then expected_value.as(Range).includes?(value.as(Float32))
-        end
-      else
-        raise "Invalid Type"
-      end
+  module Inclusion
+    def in?(value, in : Array)
+      in.includes?(value)
     end
 
-    def message
-      @message || "must be in #{expected_value}"
+    def in?(value, in : Range)
+      in.includes?(value)
     end
   end
 end

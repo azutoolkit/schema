@@ -17,8 +17,8 @@ describe Rules do
 
   describe "#<<" do
     it "adds a rule" do
-      rule = Rule.new :field, "Invalid!" do |rule|
-        rule.gte?(2, 1) && rule.lt?(1, 2)
+      rule = Rule.new :field, "Invalid!" do |_rule|
+        _rule.gte?(2, 1) && rule.lt?(1, 2)
       end
 
       subject << rule
@@ -30,8 +30,8 @@ describe Rules do
   describe "#apply" do
     it "returns true all rules are valid" do
       subject = Rules.new
-      rule = Rule.new :field, "Invalid!" do |rule|
-        rule.gte?(2, 1) && rule.lt?(1, 2)
+      rule = Rule.new :field, "Invalid!" do |_rule|
+        _rule.gte?(2, 1) && rule.lt?(1, 2)
       end
 
       subject << rule
@@ -40,11 +40,11 @@ describe Rules do
 
     it "returns false any rule is invalid" do
       subject = Rules.new
-      rule1 = Rule.new :field, "Invalid!" do |rule|
-        rule.gte?(2, 1)
+      rule1 = Rule.new :field, "Invalid!" do |_rule|
+        _rule.gte?(2, 1)
       end
-      rule2 = Rule.new :field, "Invalid!" do |rule|
-        rule.lt?(2, 1)
+      rule2 = Rule.new :field, "Invalid!" do |_rule|
+        _rule.lt?(2, 1)
       end
 
       subject << rule1

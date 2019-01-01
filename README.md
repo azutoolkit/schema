@@ -1,6 +1,6 @@
 # Contracts
 
-Contracts comes to solve a simple problem. Sometime we would like to have type safe
+Contracts comes to solve a simple problem. Sometimes we would like to have type safe
 guarantee params when parsing HTTP parameters or Hash(String, String) for a request 
 and Contracts are to resolve exactly this problem with the added benefit of performing 
 business rules validation having the params to adhere to a contract.

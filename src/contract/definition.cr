@@ -19,16 +19,6 @@ module Definition
       {% type = options[:type] %}
       {% property_name = name.id %}
       {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
-      {% if options[:json_options] %}
-        @[JSON::Field({{**options[:json_options]}})]
-      {% end %}
-      {% if options[:yaml_options] %}
-        @[YAML::Field({{**options[:yaml_options]}})]
-      {% end %}
-
-      {% if options[:comment] %}
-        {{options[:comment].id}}
-      {% end %}
 
       property{{suffixes.first.id}} {{name.id}} : {{type.id}}
 
@@ -45,9 +35,6 @@ module Definition
 
     getter rules = Rules.new
     getter params : Hash(String, String)
-
-    {% properties = FIELD_OPTIONS.keys.map { |p| p.id } %}
-    def_equals_and_hash {{*properties}}
 
     def initialize(@params : Hash(String, String))
       {% for name, options in FIELD_OPTIONS %}

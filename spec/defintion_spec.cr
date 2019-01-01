@@ -2,36 +2,36 @@ require "./spec_helper"
 
 class ContractWrapper
   contract("User") do
-    param email : String, length: (50..50), regex: /\w+@\w+\.\w{2,}/
-    param name : String, length: (1..20)
-    param age : Int32, gte: 58, eq: 24
-    param alive : Bool, eq: false
+    param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
+    param name : String, size: (1..20)
+    param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
+    param alive : Bool, eq: true
     param childrens : Array(String)
     param childrens_ages : Array(Int32)
-  end
-
-  def initialize(@params : Hash(Contract::Key, Contract::Validation::Value))
   end
 end
 
 describe "Contract::Definition" do
-  params = {} of Contract::Key => Contract::Validation::Value
-  params["email"] = "fake_email@example.com"
-  params["name"] = "Fake name"
-  params["age"] = 37
-  params["alive"] = true
-  params["childrens"] = ["Child 1", "Child 2"]
-  params["childrens_ages"] = [9, 12]
+  params = {
+    "email"          => "fake@example.com",
+    "name"           => "Fake name",
+    "age"            => "25",
+    "alive"          => "true",
+    "childrens"      => "Child 1,Child 2",
+    "childrens_ages" => "9,12",
+  }
 
   it "defines a contract object" do
-    subject = ContractWrapper.new(params)
+    subject = ContractWrapper::User.new(params)
 
-    subject.user.should be_a ContractWrapper::User
+    subject.should be_a ContractWrapper::User
+    subject.email.should eq "fake@example.com"
+    subject.name.should eq "Fake name"
+    subject.age.should eq 25
+    subject.alive.should eq true
+    subject.childrens.should eq ["Child 1", "Child 2"]
+    subject.childrens_ages.should eq [9, 12]
 
-    subject.user.responds_to?(:valid?).should be_true
-    subject.user.responds_to?(:valid!).should be_true
-    subject.user.responds_to?(:error).should be_true
-    subject.user.responds_to?(:errors).should be_true
-    subject.user.responds_to?(:validate).should be_true
+    subject.valid?.should be_truthy
   end
 end

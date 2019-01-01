@@ -1,15 +1,38 @@
 module Contract
-  module Cast
-    def self.convert!(value : Contract::Validation::Value, cast_type : Class)
-      case cast_type
-      when String.class  then value.to_s
-      when Bool.class    then [1, "true", "yes"].includes?(value)
-      when Int32.class   then value.is_a?(String) ? value.to_i32(strict: false) : value.as(Int32)
-      when Int64.class   then value.is_a?(String) ? value.to_i64(strict: false) : value.as(Int64)
-      when Float32.class then value.is_a?(String) ? value.to_f32(strict: false) : value.as(Float32)
-      when Float64.class then value.is_a?(String) ? value.to_f64(strict: false) : value.as(Float64)
-      else                    value
-      end
+  module CastAs(T)
+    def value : T
+      convert(T)
+    end
+
+    def convert(asType : String.class)
+      @value
+    end
+
+    def convert(asType : Bool.class)
+      [1, "true", "yes"].includes?(@value)
+    end
+
+    def convert(asType : Int32.class)
+      @value.to_i32
+    end
+
+    def convert(asType : Int64.class)
+      @value.to_i64
+    end
+
+    def convert(asType : Float32.class)
+      @value.to_f32
+    end
+
+    def convert(asType : Float64.class)
+      @value.to_f64
+    end
+  end
+
+  class ConvertTo(T)
+    include CastAs(T)
+
+    def initialize(@value : String)
     end
   end
 end

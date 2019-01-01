@@ -24,8 +24,7 @@ end
 
 class Rules < Array(Rule)
   def errors
-    errors = [] of Error
-    reduce(errors) do |errors, rule|
+    reduce([] of Error) do |errors, rule|
       errors << Error.from(rule) unless rule.valid?
       errors
     end

@@ -3,8 +3,8 @@ require "./spec_helper"
 describe Rule do
   describe "#valid?" do
     it "applies rule" do
-      rule = Rule.new :field, "Invalid!" do |rule|
-        rule.gte?(2, 1) && rule.lt?(1, 2)
+      rule = Rule.new :field, "Invalid!" do |_rule|
+        _rule.gte?(2, 1) && _rule.lt?(1, 2)
       end
 
       rule.valid?.should be_true

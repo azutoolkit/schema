@@ -47,14 +47,14 @@ module Definition
         {% if field_type.is_a?(Generic) %}
           {% sub_type = field_type.type_vars %}
           @{{name.id}} = field_{{name.id}}.split(",").map do |item|
-            Contract::ConvertTo({{sub_type.join('|').id}}).new(item).value
+            Schema::ConvertTo({{sub_type.join('|').id}}).new(item).value
           end
         {% else %}
-          @{{name.id}} = Contract::ConvertTo({{field_type}}).new(field_{{name.id}}).value
+          @{{name.id}} = Schema::ConvertTo({{field_type}}).new(field_{{name.id}}).value
         {% end %}
       {% end %}
 
-      load_contract_rules
+      load_schema_rules
     end
 
     def valid?
@@ -62,10 +62,10 @@ module Definition
     end
 
     def valid!
-      valid? || raise Contract::Error.new(errors)
+      valid? || raise Schema::Error.new(errors)
     end
 
-    private def load_contract_rules
+    private def load_schema_rules
       {% for name, options in FIELD_OPTIONS %}
         {% field_type = CONTENT_attributes[name][:type] %}
         {% key = name.id %}

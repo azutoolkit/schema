@@ -1,7 +1,7 @@
 require "spec"
 
 class CustomType
-  include Contract::CastAs(CustomType)
+  include Schema::CastAs(CustomType)
 
   def initialize(@value : String)
   end
@@ -22,19 +22,19 @@ describe CustomType do
   end
 end
 
-describe Contract::ConvertTo do
+describe Schema::ConvertTo do
   it "converts from String to Boolean" do
-    converter = Contract::ConvertTo(Bool).new("false")
+    converter = Schema::ConvertTo(Bool).new("false")
     converter.value.should eq false
   end
 
   it "converts from String to Int32" do
-    converter = Contract::ConvertTo(Int32).new("123")
+    converter = Schema::ConvertTo(Int32).new("123")
     converter.value.should eq 123
   end
 
   it "converts from String to Float" do
-    converter = Contract::ConvertTo(Float32).new("123.321")
+    converter = Schema::ConvertTo(Float32).new("123.321")
     converter.value.should eq 123.321_f32
   end
 end

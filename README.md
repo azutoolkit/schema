@@ -1,9 +1,9 @@
-# Contracts
+# Schemas
 
-Contracts come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Contracts are to resolve precisely this problem with the added benefit of performing 
-business rules validation to have the params adhere to a `"business contract"`.
+Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas are to resolve precisely this problem with the added benefit of performing
+business rules validation to have the params adhere to a `"business schema"`.
 
-Contracts are beneficial, in my opinion, ideal, for when defining web services APIs
+Schemas are beneficial, in my opinion, ideal, for when defining web services APIs
 
 ## Installation
 
@@ -11,24 +11,24 @@ Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
-  contracts:
-    github: your-github-user/contracts
+  schemas:
+    github: your-github-user/schemas
 ```
 
 ## Usage
 
 ```crystal
-require "contracts"
+require "schemas"
 ```
 
-```crystal 
+```crystal
 class ExampleController
   getter params : Hash(String, String)
 
   def initialize(@params)
   end
 
-  contract("User") do
+  schema("User") do
     param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
@@ -36,7 +36,7 @@ class ExampleController
     param childrens : Array(String)
     param childrens_ages : Array(Int32)
 
-    contract("Address") do
+    schema("Address") do
       param street : String, size: (5..15)
       param zip : String, match: /\d{5}/
       param city : String, size: 2, in: %w[NY NJ CA UT]
@@ -54,8 +54,8 @@ params = HTTP::Params.parse(
 subject = ExampleController.new(params.to_h)
 ```
 
-Contracts are defined as value objects, meaning structs, which are NOT mutable, 
-making them ideal to pass contract object as arguments to constructors.
+Schemas are defined as value objects, meaning structs, which are NOT mutable,
+making them ideal to pass schema object as arguments to constructors.
 
 ```crystal
 user = subject.user
@@ -71,7 +71,7 @@ This is WIP
 
 ```crystal
 class CustomType
-  include Contract::CastAs(CustomType)
+  include Schema::CastAs(CustomType)
 
   def initialize(@value : String)
   end
@@ -91,7 +91,7 @@ end
 
 This is WIP.
 
-Create a module that extends from contract Validators module. 
+Create a module that extends from schema Validators module.
 
 ```crystal
 require "some_model"
@@ -104,23 +104,23 @@ module Validators
   end
 end
 
-contract("User") do 
+schema("User") do
   param name : String, unique: true
 end
 ```
 
-Notice that `unique:` corresponds to `unique?`. 
+Notice that `unique:` corresponds to `unique?`.
 This is how the library know which validation to perform.
 
 ## Development
 
-> Note: This is subject to modifications for improvement. 
+> Note: This is subject to modifications for improvement.
 > Submit ideas as issues before opening a pull request.
 
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/contracts/fork>)
+1. Fork it (<https://github.com/your-github-user/schemas/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

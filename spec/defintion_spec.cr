@@ -1,7 +1,7 @@
 require "./spec_helper"
 
-class ContractWrapper
-  contract("User") do
+class SchemaWrapper
+  schema("User") do
     param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
@@ -11,7 +11,7 @@ class ContractWrapper
   end
 end
 
-describe "Contract::Definition" do
+describe "Schema::Definition" do
   params = {
     "email"          => "fake@example.com",
     "name"           => "Fake name",
@@ -21,10 +21,10 @@ describe "Contract::Definition" do
     "childrens_ages" => "9,12",
   }
 
-  it "defines a contract object" do
-    subject = ContractWrapper::User.new(params)
+  it "defines a schema object" do
+    subject = SchemaWrapper::User.new(params)
 
-    subject.should be_a ContractWrapper::User
+    subject.should be_a SchemaWrapper::User
     subject.email.should eq "fake@example.com"
     subject.name.should eq "Fake name"
     subject.age.should eq 25

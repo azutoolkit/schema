@@ -1,4 +1,4 @@
-macro contract(klass)
+macro schema(klass)
   def {{klass.id.downcase}}
     @{{klass.id.downcase}} ||= {{klass.id}}.new(params)
   end

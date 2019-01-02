@@ -7,7 +7,7 @@ class ExampleController
   def initialize(@params)
   end
 
-  contract("User") do
+  schema("User") do
     param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
@@ -15,7 +15,7 @@ class ExampleController
     param childrens : Array(String)
     param childrens_ages : Array(Int32)
 
-    contract("Address") do
+    schema("Address") do
       param street : String, size: (5..15)
       param zip : String, match: /\d{5}/
       param city : String, size: 2, in: %w[NY NJ CA UT]
@@ -23,7 +23,7 @@ class ExampleController
   end
 end
 
-describe Contract do
+describe Schema do
   context "for HTTP::Params" do
     it "validates params" do
       params = HTTP::Params.parse(

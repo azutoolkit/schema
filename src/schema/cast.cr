@@ -1,4 +1,4 @@
-module Contract
+module Schema
   module CastAs(T)
     def value : T
       convert(T)

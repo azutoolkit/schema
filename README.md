@@ -94,20 +94,22 @@ This is WIP.
 Create a module that extends from contract Validators module. 
 
 ```crystal
+require "some_model"
+
 module Validators
-  module Equal
-    def eq?(value, other)
-      value == other
+  module Custom
+    def unique?(value, enabled : Bool = true)
+      SomeModel.where(name: value).count.zero? if enabled
     end
   end
 end
 
 contract("User") do 
-  param name : String, eq: "John"
+  param name : String, unique: true
 end
 ```
 
-Notice that `eq:` corresponds to `eq?`. 
+Notice that `unique:` corresponds to `unique?`. 
 This is how the library know which validation to perform.
 
 ## Development

@@ -10,4 +10,5 @@ module Validators
   include LessThanOrEqual
   include RegularExpression
   include Size
+  include Custom
 end

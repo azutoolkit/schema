@@ -1,5 +1,7 @@
 # Schemas
 
+[![Build Status](https://travis-ci.org/eliasjpr/contracts.svg?branch=master)](https://travis-ci.org/eliasjpr/contracts)
+
 Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas are to resolve precisely this problem with the added benefit of performing
 business rules validation to have the params adhere to a `"business schema"`.
 

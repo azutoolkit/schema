@@ -1,4 +1,4 @@
-require "./schema/validators/*"
+require "./schema/validations/*"
 require "./schema/rules"
 require "./schema/cast"
 require "./schema/definition"
@@ -11,7 +11,7 @@ require "./schema/schema_macro"
 # The Schema macros helps you define schemas and assists
 # with instantiating and validating data with those schemas at runtime.
 module Schema
-  include Validators
+  include Validations
 
   VERSION = "0.1.0"
 end

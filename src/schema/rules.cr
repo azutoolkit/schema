@@ -1,7 +1,7 @@
-require "./validators"
+require "./validations"
 
 class Rule
-  include Validators
+  include Validations
   getter :field, :message
 
   def initialize(@field : Symbol, @message : String, &block : Rule -> Bool)

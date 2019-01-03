@@ -1,4 +1,4 @@
-module Validators
+module Validations
   module GreaterThanOrEqual
     def gte?(value : Int, compare : Int)
       value >= compare

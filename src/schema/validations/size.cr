@@ -1,4 +1,4 @@
-module Validators
+module Validations
   module Size
     def size?(value, size : Int)
       value.size == size

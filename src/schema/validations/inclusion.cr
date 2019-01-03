@@ -1,4 +1,4 @@
-module Validators
+module Validations
   module Inclusion
     def in?(value, in : Array)
       in.includes?(value)

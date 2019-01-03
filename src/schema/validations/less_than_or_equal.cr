@@ -1,4 +1,4 @@
-module Validators
+module Validations
   module LessThanOrEqual
     def lte?(value : Int, compare : Int)
       value <= compare

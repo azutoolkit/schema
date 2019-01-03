@@ -1,11 +1,13 @@
-# Schemas
+# Schemas-Validations
 
 [![Build Status](https://travis-ci.org/eliasjpr/contracts.svg?branch=master)](https://travis-ci.org/eliasjpr/contracts)
 
 Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas are to resolve precisely this problem with the added benefit of performing
 business rules validation to have the params adhere to a `"business schema"`.
 
-Schemas are beneficial, in my opinion, ideal, for when defining web services APIs
+Schemas are beneficial, in my opinion, ideal, for when defining API Requests, Web Forms, JSON, YAML.  Schema-Validation Takes a different approach and focuses a lot on explicitness, clarity and precision of validation logic. It is designed to work with any data input, whether it’s a simple hash, an array or a complex object with deeply nested data.
+
+It is based on the idea that each validation is encapsulated by a simple, stateless predicate that receives some input and returns either true or false. Those predicates are encapsulated by rules which can be composed together using predicate logic. This means you can use the common logic operators to build up a validation schema.
 
 ## Installation
 
@@ -93,12 +95,12 @@ end
 
 This is WIP.
 
-Create a module that extends from schema Validators module.
+Create a module that extends from schema Validations module.
 
 ```crystal
 require "some_model"
 
-module Validators
+module Validations
   module Custom
     def unique?(value, enabled : Bool = true)
       SomeModel.where(name: value).count.zero? if enabled

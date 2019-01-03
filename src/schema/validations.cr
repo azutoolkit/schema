@@ -1,6 +1,6 @@
-require "./validators/*"
+require "./validations/*"
 
-module Validators
+module Validations
   include Equal
   include Exclusion
   include GreaterThan

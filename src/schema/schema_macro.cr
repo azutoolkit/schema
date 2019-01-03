@@ -4,7 +4,7 @@ macro schema(klass)
   end
 
   struct {{klass.id}}
-    include Definition
+    include Contract::Definition
 
     {{yield}}
   end

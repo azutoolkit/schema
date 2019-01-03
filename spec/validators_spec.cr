@@ -1,16 +1,16 @@
 require "./spec_helper"
 
-include Validators::Equal
-include Validators::Exclusion
-include Validators::GreaterThanOrEqual
-include Validators::GreaterThan
-include Validators::LessThanOrEqual
-include Validators::LessThan
-include Validators::Inclusion
-include Validators::Size
-include Validators::RegularExpression
+include Validations::Equal
+include Validations::Exclusion
+include Validations::GreaterThanOrEqual
+include Validations::GreaterThan
+include Validations::LessThanOrEqual
+include Validations::LessThan
+include Validations::Inclusion
+include Validations::Size
+include Validations::RegularExpression
 
-describe Validators do
+describe Validations do
   describe "#eq?" do
     it { eq?(1, 1).should be_true }
     it { eq?("one", "one").should be_true }

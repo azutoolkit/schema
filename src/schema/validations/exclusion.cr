@@ -1,4 +1,4 @@
-module Validators
+module Validations
   module Exclusion
     def exclude?(value, exclusion : Array)
       !exclusion.includes?(value)

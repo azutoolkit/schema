@@ -1,6 +1,6 @@
 # Schemas-Validations
 
-[![Build Status](https://travis-ci.org/eliasjpr/contracts.svg?branch=master)](https://travis-ci.org/eliasjpr/contracts)
+[![Build Status](https://travis-ci.org/eliasjpr/Schemas.svg?branch=master)](https://travis-ci.org/eliasjpr/Schemas)
 
 Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas are to resolve precisely this problem with the added benefit of performing
 business rules validation to have the params adhere to a `"business schema"`.
@@ -33,7 +33,7 @@ class ExampleController
   end
 
   schema("User") do
-    param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
+    param email : String
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
     param alive : Bool, eq: true
@@ -45,6 +45,10 @@ class ExampleController
       param zip : String, match: /\d{5}/
       param city : String, size: 2, in: %w[NY NJ CA UT]
     end
+  end
+
+  validation do
+    , match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
   end
 end
 

@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-class SchemaWrapper
+struct SchemaWrapper
   include Schema::Validators
 
   schema("User") do
@@ -23,10 +23,30 @@ describe "Schema::Definition" do
     "childrens_ages" => "9,12",
   }
 
-  it "defines a schema object" do
+  it "defines a schema object from Hash(String, Stirng)" do
     subject = SchemaWrapper::User.new(params)
 
     subject.should be_a SchemaWrapper::User
+    subject.email.should eq "fake@example.com"
+    subject.name.should eq "Fake name"
+    subject.age.should eq 25
+    subject.alive.should eq true
+    subject.childrens.should eq ["Child 1", "Child 2"]
+    subject.childrens_ages.should eq [9, 12]
+    subject.valid?.should be_tr  uthy
+  end
+
+  it "defines a schema from JSON" do
+    content = %({ "user": {
+      "email": "fake@example.com",
+      "name": "Fake name",
+      "age": 25,
+      "alive": true,
+      "childrens": ["Child 1", "Child 2"],
+      "childrens_ages": [9, 12]
+    }})
+
+    subject = SchemaWrapper::User.from_json(content, "user")
     subject.email.should eq "fake@example.com"
     subject.name.should eq "Fake name"
     subject.age.should eq 25

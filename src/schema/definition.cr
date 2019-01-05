@@ -1,3 +1,6 @@
+require "json"
+require "yaml"
+
 module Schema
   module Definition
     macro param(attribute, **options)
@@ -16,34 +19,34 @@ module Schema
     end
 
     private macro __process_params
-      {% for name, options in FIELD_OPTIONS %}
-        {% type = options[:type] %}
-        {% property_name = name.id %}
-        {% suffixes = options[:raise_on_nil] ? ["?", ""] : ["", "!"] %}
+      JSON.mapping(
+        {% for name, options in FIELD_OPTIONS %}
+          {% type = options[:type] %}
+          {% nilable = options[:nilable] != nil ? true : false %}
+          {% key = options[:key] != nil ? options[:key] : name.downcase.stringify %}
+          {{name}}: { type: {{type}}, nilable: {{nilable}}, getter: true,  },
+        {% end %}
+      )
 
-        property{{suffixes.first.id}} {{name.id}} : {{type.id}}
+      YAML.mapping(
+        {% for name, options in FIELD_OPTIONS %}
+          {% type = options[:type] %}
+          {% nilable = options[:nilable] != nil ? true : false %}
+          {% key = options[:key] != nil ? options[:key] : name.downcase.stringify %}
+          {{name}}: { type: {{type}}, nilable: {{nilable}}, getter: true,  },
+        {% end %}
+      )
 
-        def {{name.id}}{{suffixes[1].id}}
-          raise {{@type.name.stringify}} + "#" + {{name.stringify}} + " cannot be nil" if @{{name.id}}.nil?
-          @{{name.id}}.not_nil!
-        end
+      getter params = {} of String => String
 
-        def {{property_name}}{{suffixes[1].id}}
-          raise {{@type.name.stringify}} + "#" + {{property_name.stringify}} + " cannot be nil" if @{{property_name}}.nil?
-          @{{property_name}}.not_nil!
-        end
-      {% end %}
-
-      getter params : Hash(String, String)
-
-      def initialize(@params : Hash(String, String))
+      def initialize(params : Hash(String, String))
+        @params = params.not_nil!
         {% for name, options in FIELD_OPTIONS %}
           {% field_type = CONTENT_attributes[name][:type] %}
           {% key = name.id %}
+          # Todo: Improve nesting
           field_{{name.id}} =
             @params[{{key.stringify}}]? || @params["#{self.class.name.split("::").last.downcase}.{{key}}"]
-
-
           {% if field_type.is_a?(Generic) %}
             {% sub_type = field_type.type_vars %}
             @{{name.id}} = field_{{name.id}}.split(",").map do |item|

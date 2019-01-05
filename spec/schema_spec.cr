@@ -7,7 +7,7 @@ class ExampleController
   def initialize(@params)
   end
 
-  schema("User") do
+  schema "User" do
     param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
@@ -24,7 +24,7 @@ class ExampleController
 end
 
 describe Schema do
-  context "for HTTP::Params" do
+  context "for Hash(String, String)" do
     it "validates params" do
       params = HTTP::Params.parse(
         "email=test@example.com&name=john&age=24&alive=true&" +

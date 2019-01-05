@@ -1,5 +1,16 @@
 require "./spec_helper"
 
+class EmailValidator
+  getter :record, :message
+
+  def initialize(@record : UserModel, @message : String)
+  end
+
+  def valid?
+    true
+  end
+end
+
 class UniqueRecordValidator
   getter :record, :message
 
@@ -21,7 +32,8 @@ class UserModel
 
   validation do
     use UniqueRecordValidator
-    validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true
+    use EmailValidator
+    validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true, email: true
     validate name, size: (1..20)
     validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old"
     validate alive, eq: true

@@ -34,11 +34,12 @@ module Schema
     end
 
     macro __process_validation
+      {% CUSTOM_VALIDATORS["Rule"] = "Symbol" %}
       {% custom_validators = CUSTOM_VALIDATORS.keys.map { |v| v.id }.join("|") %}
       {% custom_types = CUSTOM_VALIDATORS.values.map { |v| v.id }.join("|") %}
 
-      getter rules : Rules(Rule | {{custom_validators.id}}, Symbol|{{custom_types.id}}) =
-         Rules(Rule | {{custom_validators.id}}, Symbol|{{custom_types.id}}).new
+      getter rules : Rules({{custom_validators.id}}, {{custom_types.id}}) =
+         Rules({{custom_validators.id}},{{custom_types.id}}).new
 
       def valid?
         load_validations_rules

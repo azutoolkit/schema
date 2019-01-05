@@ -1,4 +1,4 @@
-module Contract
+module Schema
   module Definition
     macro param(attribute, **options)
       {% FIELD_OPTIONS[attribute.var] = options %}
@@ -34,7 +34,6 @@ module Contract
         end
       {% end %}
 
-      getter rules = Rules.new
       getter params : Hash(String, String)
 
       def initialize(@params : Hash(String, String))
@@ -53,32 +52,6 @@ module Contract
           {% else %}
             @{{name.id}} = Schema::ConvertTo({{field_type}}).new(field_{{name.id}}).value
           {% end %}
-        {% end %}
-
-        load_schema_rules
-      end
-
-      def valid?
-        rules.errors.empty?
-      end
-
-      def valid!
-        valid? || raise Schema::Error.new(errors)
-      end
-
-      private def load_schema_rules
-        {% for name, options in FIELD_OPTIONS %}
-          {% field_type = CONTENT_attributes[name][:type] %}
-          {% key = name.id %}
-
-          rules << Rule.new(:{{name.id}}, {{options[:message]}} || "") do |rule|
-            {% for key, expected_value in options %}
-              {% if !["message", "type"].includes?(key.stringify) %}
-              rule.{{key}}?(@{{name.id}}.as({{field_type}}), {{expected_value}}) &
-              {% end %}
-            {% end %}
-            true
-          end
         {% end %}
       end
     end

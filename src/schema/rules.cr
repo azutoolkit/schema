@@ -1,10 +1,11 @@
-require "./validations"
+require "./validation"
 
 class Rule
-  include Validations
-  getter :field, :message
+  include Schema::Validators
 
-  def initialize(@field : Symbol, @message : String, &block : Rule -> Bool)
+  getter :record, :message
+
+  def initialize(@record : Symbol, @message : String, &block : Rule -> Bool)
     @block = block
   end
 
@@ -13,19 +14,19 @@ class Rule
   end
 end
 
-struct Error
-  def self.from(rule : Rule)
-    new(rule.field, rule.message)
+struct Error(T, S)
+  def self.from(rule : T)
+    new(rule.record, rule.message)
   end
 
-  def initialize(field : Symbol, error : String)
+  def initialize(record : S, error : String)
   end
 end
 
-class Rules < Array(Rule)
+class Rules(T, S) < Array(T)
   def errors
-    reduce([] of Error) do |errors, rule|
-      errors << Error.from(rule) unless rule.valid?
+    reduce([] of Error(T, S)) do |errors, rule|
+      errors << Error(T, S).from(rule) unless rule.valid?
       errors
     end
   end

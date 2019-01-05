@@ -2,12 +2,11 @@
 
 [![Build Status](https://travis-ci.org/eliasjpr/Schemas.svg?branch=master)](https://travis-ci.org/eliasjpr/Schemas)
 
-Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas are to resolve precisely this problem with the added benefit of performing
-business rules validation to have the params adhere to a `"business schema"`.
+Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas is to resolve precisely this problem with the added benefit of performing business rules validation to have the params adhere to a `"business schema."`
 
-Schemas are beneficial, in my opinion, ideal, for when defining API Requests, Web Forms, JSON, YAML.  Schema-Validation Takes a different approach and focuses a lot on explicitness, clarity and precision of validation logic. It is designed to work with any data input, whether it’s a simple hash, an array or a complex object with deeply nested data.
+Schemas are beneficial, in my opinion, ideal, for when defining API Requests, Web Forms, JSON, YAML.  Schema-Validation Takes a different approach and focuses a lot on explicitness, clarity, and precision of validation logic. It is designed to work with any data input, whether it’s a simple hash, an array or a complex object with deeply nested data.
 
-It is based on the idea that each validation is encapsulated by a simple, stateless predicate that receives some input and returns either true or false. Those predicates are encapsulated by rules which can be composed together using predicate logic. This means you can use the common logic operators to build up a validation schema.
+Each validation is encapsulated by a simple, stateless predicate that receives some input and returns either true or false. Those predicates are encapsulated by rules which can be composed together using predicate logic, meaning you can use the familiar logic operators to build up a validation schema.
 
 ## Installation
 
@@ -16,7 +15,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   schemas:
-    github: your-github-user/schemas
+    github: eliasjpr/schema-validation
 ```
 
 ## Usage
@@ -24,6 +23,8 @@ dependencies:
 ```crystal
 require "schemas"
 ```
+
+## Defining Self Validated Schemas
 
 ```crystal
 class ExampleController
@@ -46,16 +47,15 @@ class ExampleController
       param city : String, size: 2, in: %w[NY NJ CA UT]
     end
   end
-
-  validation do
-    , match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
-  end
 end
+```
 
+Example parsing HTTP Params
+```crystal
 params = HTTP::Params.parse(
   "email=test@example.com&name=john&age=24&alive=true&" +
   "childrens=Child1,Child2&childrens_ages=1,2&" +
-  // Nested Params
+  # Nested Params
   "address.city=NY&address.street=Sleepy Hollow&address.zip=12345"
 )
 
@@ -63,7 +63,7 @@ subject = ExampleController.new(params.to_h)
 ```
 
 Schemas are defined as value objects, meaning structs, which are NOT mutable,
-making them ideal to pass schema object as arguments to constructors.
+making them ideal to pass schema objects as arguments to constructors.
 
 ```crystal
 user = subject.user
@@ -73,52 +73,51 @@ user.valid?.should be_true
 address.valid?.should be_true
 ```
 
-### Casting to Custom Types
-
-This is WIP
-
-```crystal
-class CustomType
-  include Schema::CastAs(CustomType)
-
-  def initialize(@value : String)
-  end
-
-  def value
-    convert(self.class)
-  end
-
-  // Provide a convert method to handle the casting
-  def convert(asType : self.class)
-    @value.split(",").map { |i| i.to_i32 }
-  end
-end
-```
-
 ### Custom Validations
 
-This is WIP.
-
-Create a module that extends from schema Validations module.
+Simply create a {Class}Validator with the following signature
 
 ```crystal
-require "some_model"
+class UniqueRecordValidator
+  getter :record, :message
 
-module Validations
-  module Custom
-    def unique?(value, enabled : Bool = true)
-      SomeModel.where(name: value).count.zero? if enabled
-    end
+  def initialize(@record : UserModel, @message : String)
   end
-end
 
-schema("User") do
-  param name : String, unique: true
+  def valid?
+    false
+  end
 end
 ```
 
-Notice that `unique:` corresponds to `unique?`.
-This is how the library know which validation to perform.
+Then in your class definition
+
+```crystal
+class UserModel
+  property email : String
+  property name : String
+  property age : Int32
+  property alive : Bool
+  property childrens : Array(String)
+  property childrens_ages : Array(Int32)
+
+  validation do
+    use UniqueRecordValidator
+    # Use the `custom` class name predicate as follow
+    validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true
+    validate name, size: (1..20)
+    validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old"
+    validate alive, eq: true
+    validate childrens
+    validate childrens_ages
+  end
+
+  def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages)
+  end
+end
+```
+
+Notice that `unique_record:` corresponds to `UniqueRecord`Validator.
 
 ## Development
 

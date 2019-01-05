@@ -1,6 +1,8 @@
 require "./spec_helper"
 
 class SchemaWrapper
+  include Schema::Validators
+
   schema("User") do
     param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)

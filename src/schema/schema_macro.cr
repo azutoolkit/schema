@@ -4,8 +4,15 @@ macro schema(klass)
   end
 
   struct {{klass.id}}
-    include Contract::Definition
+    include Schema::Definition
+    include Schema::Validation
 
     {{yield}}
   end
+end
+
+macro validation
+   include Schema::Validation
+
+  {{yield}}
 end

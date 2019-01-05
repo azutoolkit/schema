@@ -1,16 +1,58 @@
 require "./spec_helper"
 
-include Validations::Equal
-include Validations::Exclusion
-include Validations::GreaterThanOrEqual
-include Validations::GreaterThan
-include Validations::LessThanOrEqual
-include Validations::LessThan
-include Validations::Inclusion
-include Validations::Size
-include Validations::RegularExpression
+class UniqueRecordValidator
+  getter :record, :message
 
-describe Validations do
+  def initialize(@record : UserModel, @message : String)
+  end
+
+  def valid?
+    false
+  end
+end
+
+class UserModel
+  property email : String
+  property name : String
+  property age : Int32
+  property alive : Bool
+  property childrens : Array(String)
+  property childrens_ages : Array(Int32)
+
+  validation do
+    use UniqueRecordValidator
+    validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true
+    validate name, size: (1..20)
+    validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old"
+    validate alive, eq: true
+    validate childrens
+    validate childrens_ages
+  end
+
+  def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages)
+  end
+end
+
+include Schema::Validators
+
+describe Schema::Validation do
+  context "when Custom Validator" do
+    it "defines validation for the given object" do
+      subject = UserModel.new(
+        "fake@example.com",
+        "Fake name",
+        25,
+        true,
+        ["Child 1", "Child 2"],
+        [9, 12]
+      )
+
+      subject.valid?.should be_falsey
+    end
+  end
+end
+
+describe Schema::Validators do
   describe "#eq?" do
     it { eq?(1, 1).should be_true }
     it { eq?("one", "one").should be_true }

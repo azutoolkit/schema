@@ -1,18 +1,5 @@
 require "./spec_helper"
 
-struct SchemaWrapper
-  include Schema::Validators
-
-  schema("User") do
-    param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
-    param name : String, size: (1..20)
-    param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
-    param alive : Bool, eq: true
-    param childrens : Array(String)
-    param childrens_ages : Array(Int32)
-  end
-end
-
 describe "Schema::Definition" do
   params = {
     "email"          => "fake@example.com",
@@ -33,7 +20,7 @@ describe "Schema::Definition" do
     subject.alive.should eq true
     subject.childrens.should eq ["Child 1", "Child 2"]
     subject.childrens_ages.should eq [9, 12]
-    subject.valid?.should be_tr  uthy
+    subject.valid?.should be_truthy
   end
 
   it "defines a schema from JSON" do

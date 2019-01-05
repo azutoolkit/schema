@@ -13,7 +13,7 @@ describe Rule do
 end
 
 describe Rules do
-  subject = Rules.new
+  subject = Rules(Rule, Symbol).new
 
   describe "#<<" do
     it "adds a rule" do
@@ -29,7 +29,7 @@ describe Rules do
 
   describe "#apply" do
     it "returns true all rules are valid" do
-      subject = Rules.new
+      subject = Rules(Rule, Symbol).new
       rule = Rule.new :field, "Invalid!" do |_rule|
         _rule.gte?(2, 1) && _rule.lt?(1, 2)
       end
@@ -39,7 +39,7 @@ describe Rules do
     end
 
     it "returns false any rule is invalid" do
-      subject = Rules.new
+      subject = Rules(Rule, Symbol).new
       rule1 = Rule.new :field, "Invalid!" do |_rule|
         _rule.gte?(2, 1)
       end
@@ -52,7 +52,7 @@ describe Rules do
 
       subject.size.should eq 2
       subject.errors.size.should eq 1
-      subject.errors.should contain Error.new(:field, "Invalid!")
+      subject.errors.should contain Error(Rule, Symbol).new(:field, "Invalid!")
     end
   end
 end

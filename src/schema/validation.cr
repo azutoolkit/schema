@@ -14,13 +14,13 @@ module Schema
   end
 
   module Validation
-    CONTENT_attributes = {} of Nil => Nil
+    CONTENT_ATTRIBUTES = {} of Nil => Nil
     FIELD_OPTIONS      = {} of Nil => Nil
     CUSTOM_VALIDATORS  = {} of Nil => Nil
 
     macro validate(attribute, **options)
       {% FIELD_OPTIONS[attribute] = options %}
-      {% CONTENT_attributes[attribute] = options || {} of Nil => Nil %}
+      {% CONTENT_ATTRIBUTES[attribute] = options || {} of Nil => Nil %}
     end
 
     macro use(validator, parent_type = self)
@@ -52,8 +52,6 @@ module Schema
 
       private def load_validations_rules
         {% for name, options in FIELD_OPTIONS %}
-
-          # Adds Validation based on Custom Validators
           {% for predicate, expected_value in options %}
             {% custom_validator = predicate.id.stringify.split('_').map { |w| w.capitalize }.join("") + "Validator" %}
             {% if !["message", "type"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] != nil %}
@@ -61,7 +59,6 @@ module Schema
             {% end %}
           {% end %}
 
-          # Adds validation based on predicate methods
           rules << Rule.new(:{{name.id}}, {{options[:message]}} || "") do |rule|
           {% for predicate, expected_value in options %}
             {% custom_validator = predicate.id.stringify.split('_').map { |w| w.capitalize }.join("") + "Validator" %}

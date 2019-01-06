@@ -19,6 +19,9 @@ module Schema
     end
 
     private macro __process_params
+      {% path = @type.stringify.split("::")[2..-1] %}
+      {% sub_schema = path.join(".").downcase || "" %}
+
       JSON.mapping(
         {% for name, options in FIELD_OPTIONS %}
           {% type = options[:type] %}
@@ -38,18 +41,15 @@ module Schema
       )
 
       getter params = {} of String => String
-      private getter path : Array(String)?
 
       def initialize(params : Hash(String, String))
         @params = params.not_nil!
         {% for name, options in FIELD_OPTIONS %}
           {% field_type = CONTENT_ATTRIBUTES[name][:type] %}
           {% key = name.id %}
-          @path = self.class.name.split("::").not_nil!
-          @path.not_nil!.shift(2)
 
           field_{{name.id}} =
-            @params[{{key.stringify}}]? || @params["#{path.not_nil!.join(".").downcase}.{{key}}"]
+            @params[{{key.stringify}}]? || @params["{{sub_schema.id}}.{{key}}"]
 
           {% if field_type.is_a?(Generic) %}
             {% sub_type = field_type.type_vars %}

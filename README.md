@@ -68,11 +68,12 @@ ExampleController::User.new(params: Hash(String, String))
 ### Schema instance methods
 
 ```crystal
-getters for each of the params
-valid?
-validate!
-rules
-params
+getters   - For each of the params
+valid?    - Bool
+validate! - True or Raise Error
+errors    - Errors(T, S) 
+rules     - Rules(T, S)
+params    - Original params payload
 ```
 
 ## Example parsing HTTP Params
@@ -103,10 +104,6 @@ json = %({ "user": {
 user = ExampleController::User.from_json(json, "user")
 ```
 
-## Example parsing from YAML
-
- ```crystal
- ```
 
 # Validations
 
@@ -159,7 +156,43 @@ end
 
 Notice that `unique_record:` corresponds to `UniqueRecord`Validator.
 
-### Existing Validation Predicates
+### Defining Your Own Predicates
+
+You can define your custom predicates by simply creating a custom validator or creating methods in the `Schema::Validators` module ending with `?` and it should return a `boolean`. For example:
+
+```crystal
+class User < Model
+  property email : String
+  property name : String
+  property age : Int32
+  property alive : Bool
+  property childrens : Array(String)
+  property childrens_ages : Array(Int32)
+
+  validation do
+    ...
+    params password : String, presence: true
+
+    predicates do
+      def presence?(password : String, _other : String) : Bool
+        !value.nil?
+      end
+    end
+  end
+
+  def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages)
+  end
+end
+```
+
+The differences between a custom validator and a method predicate are:
+
+- Custom validators receive an instance of the object as a `record` instance var.
+- Custom validators allow for more control over validations.
+- Predicates are assertions against the class properties (instance var). 
+- Predicates matches property value with predicate value.
+
+### Built in Predicates
 
 ```crystal
 gte   - Greater Than or Equal To
@@ -172,35 +205,10 @@ regex - Regular Expression
 eq    - Equal
 ```
 
-### Defining your own predicates
-
-You can define your custom predicates by simply creating a custom validator or creating methods in the `Schema::Validators` module ending with `?` and it should return a `boolean`. For example:
-
-```crystal
-module RegularExpression
-  def match?(value : String, regex : Regex)
-    !value.match(regex).nil?
-  end
-end
-
-module Schema
-  module Validators
-    include RegularExpression
-  end
-end
-
-```
-
-The differences between a custom validator and a method predicate are:
-
-- Custom validators receive an instance of the object as a `record` instance var.
-- Method predicates must have 2 arguments. The actual value and the value to compare agaisnt. The comparing value is the value of the predicate. Eg. `match: /\w+@\w+\.\w{2,3}/`, the compare value is `/\w+@\w+\.\w{2,3}/`
-
 ## Development
 
 > Note: This is subject to modifications for improvement.
 > Submit ideas as issues before opening a pull request.
-
 
 ## Contributing
 
@@ -212,4 +220,5 @@ The differences between a custom validator and a method predicate are:
 
 ## Contributors
 
-- [your-github-user](https://github.com/your-github-user) Elias J. Perez - creator, maintainer
+- [@eliasjpr](https://github.com/eliasjpr) Elias J. Perez - creator, maintainer
+`

@@ -1,9 +1,9 @@
 require "./spec_helper"
 
-describe Rule do
+describe Schema::Rule do
   describe "#valid?" do
     it "applies rule" do
-      rule = Rule.new :field, "Invalid!" do |_rule|
+      rule = Schema::Rule.new :field, "Invalid!" do |_rule|
         _rule.gte?(2, 1) && _rule.lt?(1, 2)
       end
 
@@ -12,12 +12,12 @@ describe Rule do
   end
 end
 
-describe Rules do
-  subject = Rules(Rule, Symbol).new
+describe Schema::Rules do
+  subject = Schema::Rules(Schema::Rule, Symbol).new
 
   describe "#<<" do
     it "adds a rule" do
-      rule = Rule.new :field, "Invalid!" do |_rule|
+      rule = Schema::Rule.new :field, "Invalid!" do |_rule|
         _rule.gte?(2, 1) && _rule.lt?(1, 2)
       end
 
@@ -29,8 +29,8 @@ describe Rules do
 
   describe "#apply" do
     it "returns true all rules are valid" do
-      subject = Rules(Rule, Symbol).new
-      rule = Rule.new :field, "Invalid!" do |_rule|
+      subject = Schema::Rules(Schema::Rule, Symbol).new
+      rule = Schema::Rule.new :field, "Invalid!" do |_rule|
         _rule.gte?(2, 1) && _rule.lt?(1, 2)
       end
 
@@ -39,11 +39,11 @@ describe Rules do
     end
 
     it "returns false any rule is invalid" do
-      subject = Rules(Rule, Symbol).new
-      rule1 = Rule.new :field, "Invalid!" do |_rule|
+      subject = Schema::Rules(Schema::Rule, Symbol).new
+      rule1 = Schema::Rule.new :field, "Invalid!" do |_rule|
         _rule.gte?(2, 1)
       end
-      rule2 = Rule.new :field, "Invalid!" do |_rule|
+      rule2 = Schema::Rule.new :field, "Invalid!" do |_rule|
         _rule.lt?(2, 1)
       end
 
@@ -52,7 +52,7 @@ describe Rules do
 
       subject.size.should eq 2
       subject.errors.size.should eq 1
-      subject.errors.should contain Error(Rule, Symbol).new(:field, "Invalid!")
+      subject.errors.should contain Schema::Error(Schema::Rule, Symbol).new(:field, "Invalid!")
     end
   end
 end

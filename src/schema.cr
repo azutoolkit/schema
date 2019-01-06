@@ -1,4 +1,7 @@
 require "./schema/validation"
+require "./schema/error"
+require "./schema/errors"
+require "./schema/rule"
 require "./schema/rules"
 require "./schema/cast"
 require "./schema/definition"

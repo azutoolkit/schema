@@ -26,6 +26,9 @@ require "schemas"
 
 ## Defining Self Validated Schemas
 
+Schemas are defined as value objects, meaning structs, which are NOT mutable,
+making them ideal to pass schema objects as arguments to constructors.
+
 ```crystal
 class ExampleController
   getter params : Hash(String, String)
@@ -46,11 +49,34 @@ class ExampleController
       param zip : String, match: /\d{5}/
       param city : String, size: 2, in: %w[NY NJ CA UT]
     end
+
+    def some_method(arg)
+      ...do something
+    end
   end
 end
 ```
 
-Example parsing HTTP Params
+### Schema defined methods
+
+```crystal
+ExampleController::User.from_json(pyaload: String)
+ExampleController::User.from_yaml(pyaload: String)
+ExampleController::User.new(params: Hash(String, String))
+```
+
+### Schema instance methods
+
+```crystal
+getters for each of the params
+valid?
+validate!
+rules
+params
+```
+
+## Example parsing HTTP Params
+
 ```crystal
 params = HTTP::Params.parse(
   "email=test@example.com&name=john&age=24&alive=true&" +
@@ -62,38 +88,32 @@ params = HTTP::Params.parse(
 subject = ExampleController.new(params.to_h)
 ```
 
-Schemas are defined as value objects, meaning structs, which are NOT mutable,
-making them ideal to pass schema objects as arguments to constructors.
+## Example parsing from JSON
 
-```crystal
-user = subject.user
-address = user.address
+```crystal 
+json = %({ "user": {
+      "email": "fake@example.com",
+      "name": "Fake name",
+      "age": 25,
+      "alive": true,
+      "childrens": ["Child 1", "Child 2"],
+      "childrens_ages": [9, 12]
+    }})
 
-user.valid?.should be_true
-address.valid?.should be_true
+user = ExampleController::User.from_json(json, "user")
 ```
 
-### Custom Validations
+## Example parsing from YAML
 
-Simply create a {Class}Validator with the following signature
+ ```crystal
+ ```
 
-```crystal
-class UniqueRecordValidator
-  getter :record, :message
+# Validations
 
-  def initialize(@record : UserModel, @message : String)
-  end
-
-  def valid?
-    false
-  end
-end
-```
-
-Then in your class definition
+You can also perform validations for existing objects without the use of Schemas. 
 
 ```crystal
-class UserModel
+class User < Model
   property email : String
   property name : String
   property age : Int32
@@ -102,7 +122,10 @@ class UserModel
   property childrens_ages : Array(Int32)
 
   validation do
+    # To use a custom validator, this will enable the predicate `unique_record` 
+    # which is derived from the class name minus `validator`
     use UniqueRecordValidator
+
     # Use the `custom` class name predicate as follow
     validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true
     validate name, size: (1..20)
@@ -117,7 +140,61 @@ class UserModel
 end
 ```
 
+## Custom Validations
+
+Simply create a class `{Name}Validator` with the following signature:
+
+```crystal
+class UniqueRecordValidator
+  getter :record, :message
+
+  def initialize(@record : UserModel, @message : String)
+  end
+
+  def valid?
+    false
+  end
+end
+```
+
 Notice that `unique_record:` corresponds to `UniqueRecord`Validator.
+
+### Existing Validation Predicates
+
+```crystal
+gte   - Greater Than or Equal To
+lte   - Less Than or Equal To
+gt    - Greater Than
+lt    - Less Than
+size  - Size
+in    - Inclusion
+regex - Regular Expression
+eq    - Equal
+```
+
+### Defining your own predicates
+
+You can define your custom predicates by simply creating a custom validator or creating methods in the `Schema::Validators` module ending with `?` and it should return a `boolean`. For example:
+
+```crystal
+module RegularExpression
+  def match?(value : String, regex : Regex)
+    !value.match(regex).nil?
+  end
+end
+
+module Schema
+  module Validators
+    include RegularExpression
+  end
+end
+
+```
+
+The differences between a custom validator and a method predicate are:
+
+- Custom validators receive an instance of the object as a `record` instance var.
+- Method predicates must have 2 arguments. The actual value and the value to compare agaisnt. The comparing value is the value of the predicate. Eg. `match: /\w+@\w+\.\w{2,3}/`, the compare value is `/\w+@\w+\.\w{2,3}/`
 
 ## Development
 

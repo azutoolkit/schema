@@ -24,7 +24,7 @@ describe "Schema::Definition" do
   end
 
   it "defines a schema from JSON" do
-    content = %({ "user": {
+    json = %({ "user": {
       "email": "fake@example.com",
       "name": "Fake name",
       "age": 25,
@@ -33,7 +33,8 @@ describe "Schema::Definition" do
       "childrens_ages": [9, 12]
     }})
 
-    subject = SchemaWrapper::User.from_json(content, "user")
+    subject = SchemaWrapper::User.from_json(json, "user")
+
     subject.email.should eq "fake@example.com"
     subject.name.should eq "Fake name"
     subject.age.should eq 25

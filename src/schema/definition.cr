@@ -33,20 +33,24 @@ module Schema
           {% type = options[:type] %}
           {% nilable = options[:nilable] != nil ? true : false %}
           {% key = options[:key] != nil ? options[:key] : name.downcase.stringify %}
-          {{name}}: { type: {{type}}, nilable: {{nilable}}, getter: true,  },
+          {{name}}: { type: {{type}}, nilable: {{nilable}}, getter: true, },
         {% end %}
       )
 
       getter params = {} of String => String
+      private getter path : Array(String)?
 
       def initialize(params : Hash(String, String))
         @params = params.not_nil!
         {% for name, options in FIELD_OPTIONS %}
           {% field_type = CONTENT_ATTRIBUTES[name][:type] %}
           {% key = name.id %}
-          # Todo: Improve nesting
+          @path = self.class.name.split("::").not_nil!
+          @path.not_nil!.shift(2)
+
           field_{{name.id}} =
-            @params[{{key.stringify}}]? || @params["#{self.class.name.split("::").last.downcase}.{{key}}"]
+            @params[{{key.stringify}}]? || @params["#{path.not_nil!.join(".").downcase}.{{key}}"]
+
           {% if field_type.is_a?(Generic) %}
             {% sub_type = field_type.type_vars %}
             @{{name.id}} = field_{{name.id}}.split(",").map do |item|

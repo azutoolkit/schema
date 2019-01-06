@@ -1,5 +1,16 @@
 require "./spec_helper"
 
+struct SchemaExample
+  schema("User") do
+    param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
+    param name : String, size: (1..20)
+    param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
+    param alive : Bool, eq: true
+    param childrens : Array(String)
+    param childrens_ages : Array(Int32)
+  end
+end
+
 describe "Schema::Definition" do
   params = {
     "email"          => "fake@example.com",
@@ -11,9 +22,9 @@ describe "Schema::Definition" do
   }
 
   it "defines a schema object from Hash(String, Stirng)" do
-    subject = SchemaWrapper::User.new(params)
+    subject = SchemaExample::User.new(params)
 
-    subject.should be_a SchemaWrapper::User
+    subject.should be_a SchemaExample::User
     subject.email.should eq "fake@example.com"
     subject.name.should eq "Fake name"
     subject.age.should eq 25
@@ -33,7 +44,7 @@ describe "Schema::Definition" do
       "childrens_ages": [9, 12]
     }})
 
-    subject = SchemaWrapper::User.from_json(json, "user")
+    subject = SchemaExample::User.from_json(json, "user")
 
     subject.email.should eq "fake@example.com"
     subject.name.should eq "Fake name"

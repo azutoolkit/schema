@@ -36,18 +36,23 @@ class ExampleController
   def initialize(@params)
   end
 
-  schema("User") do
-    param email : String
+  schema User do
+    param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
     param alive : Bool, eq: true
     param childrens : Array(String)
     param childrens_ages : Array(Int32)
 
-    schema("Address") do
+    schema Address do
       param street : String, size: (5..15)
       param zip : String, match: /\d{5}/
       param city : String, size: 2, in: %w[NY NJ CA UT]
+
+      schema Location do
+        param longitude : Float32
+        param latitute : Float32
+      end
     end
 
     def some_method(arg)
@@ -57,7 +62,7 @@ class ExampleController
 end
 ```
 
-### Schema defined methods
+### Schema class methods
 
 ```crystal
 ExampleController::User.from_json(pyaload: String)
@@ -74,19 +79,30 @@ validate! - True or Raise Error
 errors    - Errors(T, S) 
 rules     - Rules(T, S)
 params    - Original params payload
+to_json   - Outputs JSON
+to_yaml   - Outputs YAML
 ```
 
-## Example parsing HTTP Params
+## Example parsing HTTP Params (With nested params)
 
 ```crystal
 params = HTTP::Params.parse(
-  "email=test@example.com&name=john&age=24&alive=true&" +
-  "childrens=Child1,Child2&childrens_ages=1,2&" +
-  # Nested Params
-  "address.city=NY&address.street=Sleepy Hollow&address.zip=12345"
-)
+        "email=test@example.com&name=john&age=24&alive=true&" +
+        "childrens=Child1,Child2&childrens_ages=1,2&" +
+        # Nested params
+        "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
+        "address.location.longitude=41.085651&address.location.latitute=-73.858467"
+      )
 
-subject = ExampleController.new(params.to_h)
+subject   = ExampleController.new(params.to_h)
+```
+
+Accessing the generated schemas:
+
+```crystal
+user      = subject.user     - ExampleController::User
+address   = user.address     - ExampleController::User::Address
+location  = address.location - ExampleController::User::Address::Location
 ```
 
 ## Example parsing from JSON
@@ -205,10 +221,13 @@ regex - Regular Expression
 eq    - Equal
 ```
 
-## Development
+## Development (Help Wanted!)
 
-> Note: This is subject to modifications for improvement.
-> Submit ideas as issues before opening a pull request.
+Things left to do: 
+
+- [ ] Validate nested - When calling `valid?(:nested)` validates sub schemas.
+- [ ] Build nested yaml/json- Currently json and yaml do not support the sub schemas. 
+- [ ] Document Custom Parser for custom types. Currently the library supports parsing to Custom Types, but yet needs to be documented with a working example
 
 ## Contributing
 
@@ -221,4 +240,3 @@ eq    - Equal
 ## Contributors
 
 - [@eliasjpr](https://github.com/eliasjpr) Elias J. Perez - creator, maintainer
-`

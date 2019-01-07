@@ -31,8 +31,7 @@ class UserModel
   property childrens_ages : Array(Int32)
 
   validation do
-    use UniqueRecordValidator, UserModel
-    use EmailValidator
+    use UniqueRecordValidator, EmailValidator
     validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true, email: true
     validate name, size: (1..20)
     validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old", some: "hello"

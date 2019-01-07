@@ -23,8 +23,10 @@ module Schema
       {% CONTENT_ATTRIBUTES[attribute] = options || {} of Nil => Nil %}
     end
 
-    macro use(validator, parent_type = self)
-      {% CUSTOM_VALIDATORS[validator.stringify] = parent_type.id %}
+    macro use(*validators)
+      {% for validator in validators %}
+        {% CUSTOM_VALIDATORS[validator.stringify] = @type %}
+      {% end %}
     end
 
     macro predicates

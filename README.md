@@ -76,7 +76,7 @@ ExampleController::User.new(params: Hash(String, String))
 getters   - For each of the params
 valid?    - Bool
 validate! - True or Raise Error
-errors    - Errors(T, S) 
+errors    - Errors(T, S)
 rules     - Rules(T, S)
 params    - Original params payload
 to_json   - Outputs JSON
@@ -107,7 +107,7 @@ location  = address.location - ExampleController::User::Address::Location
 
 ## Example parsing from JSON
 
-```crystal 
+```crystal
 json = %({ "user": {
       "email": "fake@example.com",
       "name": "Fake name",
@@ -123,7 +123,7 @@ user = ExampleController::User.from_json(json, "user")
 
 # Validations
 
-You can also perform validations for existing objects without the use of Schemas. 
+You can also perform validations for existing objects without the use of Schemas.
 
 ```crystal
 class User < Model
@@ -135,7 +135,7 @@ class User < Model
   property childrens_ages : Array(Int32)
 
   validation do
-    # To use a custom validator, this will enable the predicate `unique_record` 
+    # To use a custom validator, this will enable the predicate `unique_record`
     # which is derived from the class name minus `validator`
     use UniqueRecordValidator
 
@@ -205,7 +205,7 @@ The differences between a custom validator and a method predicate are:
 
 - Custom validators receive an instance of the object as a `record` instance var.
 - Custom validators allow for more control over validations.
-- Predicates are assertions against the class properties (instance var). 
+- Predicates are assertions against the class properties (instance var).
 - Predicates matches property value with predicate value.
 
 ### Built in Predicates
@@ -221,12 +221,19 @@ regex - Regular Expression
 eq    - Equal
 ```
 
+Additional params
+
+```crystal
+message - Error message to display
+nilable - Allow nil, true or false
+```
+
 ## Development (Help Wanted!)
 
-Things left to do: 
+Things left to do:
 
 - [ ] Validate nested - When calling `valid?(:nested)` validates sub schemas.
-- [ ] Build nested yaml/json- Currently json and yaml do not support the sub schemas. 
+- [ ] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
 - [ ] Document Custom Parser for custom types. Currently the library supports parsing to Custom Types, but yet needs to be documented with a working example
 
 ## Contributing

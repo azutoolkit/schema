@@ -1,17 +1,23 @@
 macro schema(name)
-  def {{name.id.downcase}} : {{name.id}}
-    @{{name.id.downcase}} ||= {{name.id}}.new(params)
-  end
+  {% sub_schema = "" %}
+  {% path = @type.stringify.split("::") || "" %}
 
-  def {{name.id.downcase}}_from_json(payload : String) : {{name.id}}
-    @{{name.id.downcase}} ||= {{name.id}}.from_json(payload)
-  end
+  {% if path.size > 1 %}
+    {% sub_schema = path[2..-1].join(".").downcase %}
+  {% end %}
 
-  def {{name.id.downcase}}_from_yaml(payload : String) : {{name.id}}
-    @{{name.id.downcase}} ||= {{name.id}}.from_yaml(payload)
-  end
+  {% unless path[1..-1].join("").empty? %}
+    @[JSON::Field(key: "{{name.id.downcase}}", emit_null: true)]
+    @{{name.id.downcase}} : {{name.id.capitalize}}?
 
-  struct {{name.id}}
+    protected def after_schema_initialize(params : Hash(String, String))
+      @{{name.id.downcase}} = {{name.id.capitalize}}.new(params)
+    end
+  {% end %}
+
+  struct {{name.id.capitalize}}
+    include JSON::Serializable
+    include YAML::Serializable
     include Schema::Definition
     include Schema::Validation
 

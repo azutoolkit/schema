@@ -22,7 +22,7 @@ class ExampleController
 
       schema Location do
         param longitude : Float32
-        param latitute : Float32
+        param latitude : Float32
       end
     end
   end
@@ -35,17 +35,43 @@ describe Schema do
         "email=test@example.com&name=john&age=24&alive=true&" +
         "childrens=Child1,Child2&childrens_ages=1,2&" +
         "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
-        "address.location.longitude=41.085651&address.location.latitute=-73.858467"
+        "address.location.longitude=41.085651&address.location.latitude=-73.858467"
       )
 
-      subject = ExampleController.new(params.to_h)
-      user = subject.user
-      address = user.address
-      location = address.location
+      user = ExampleController::User.new(params.to_h)
 
-      user.valid?.should be_true
-      address.valid?.should be_true
-      location.valid?.should be_true
+      p user.to_json
+      # address.valid?.should be_true
+      # location.valid?.should be_true
     end
+  end
+
+  it "defines a schema from JSON" do
+    json = %({ "user": {
+      "email": "fake@example.com",
+      "name": "Fake name",
+      "age": 25,
+      "alive": true,
+      "childrens": ["Child 1", "Child 2"],
+      "childrens_ages": [9, 12],
+      "address": {
+        "city": "NY",
+        "street": "slepy",
+        "zip": "12345",
+        "location": {
+          "longitude": 123.122,
+          "latitude": 342454.4321
+        }
+      }
+    }})
+
+    subject = ExampleController::User.from_json(json, "user")
+
+    subject.email.should eq "fake@example.com"
+    subject.name.should eq "Fake name"
+    subject.age.should eq 25
+    subject.alive.should eq true
+    subject.childrens.should eq ["Child 1", "Child 2"]
+    subject.childrens_ages.should eq [9, 12]
   end
 end

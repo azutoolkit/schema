@@ -230,6 +230,8 @@ nilable - Allow nil, true or false
 
 ## Development (Help Wanted!)
 
+API subject to change until marked as released version
+
 Things left to do:
 
 - [ ] Validate nested - When calling `valid?(:nested)` validates sub schemas.

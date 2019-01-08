@@ -48,6 +48,8 @@ module Schema
       {% custom_validators = CUSTOM_VALIDATORS.keys.map { |v| v.id }.join("|") %}
       {% custom_types = CUSTOM_VALIDATORS.values.map { |v| v.id }.join("|") %}
 
+      @[JSON::Field(ignore: true)]
+      @[YAML::Field(ignore: true)]
       getter rules : Schema::Rules({{custom_validators.id}}, {{custom_types.id}}) =
          Schema::Rules({{custom_validators.id}},{{custom_types.id}}).new
 

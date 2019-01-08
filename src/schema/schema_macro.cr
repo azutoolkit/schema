@@ -6,14 +6,16 @@ macro schema(name)
     {% sub_schema = path[2..-1].join(".").downcase %}
   {% end %}
 
-  {% unless path[1..-1].join("").empty? %}
-    @[JSON::Field(key: "{{name.id.downcase}}", emit_null: true)]
-    @{{name.id.downcase}} : {{name.id.capitalize}}?
+  @[JSON::Field(key: "{{name.id.downcase}}", emit_null: true)]
+  @{{name.id.downcase}} : {{name.id.capitalize}}?
 
-    protected def after_schema_initialize(params : Hash(String, String))
-      @{{name.id.downcase}} = {{name.id.capitalize}}.new(params)
-    end
-  {% end %}
+  def {{name.id.downcase}}
+    @{{name.id.downcase}}.not_nil!
+  end
+
+  protected def after_schema_initialize(params : Hash(String, String))
+    @{{name.id.downcase}} = {{name.id.capitalize}}.new(params)
+  end
 
   struct {{name.id.capitalize}}
     include JSON::Serializable

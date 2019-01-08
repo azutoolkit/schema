@@ -24,10 +24,12 @@ module Schema
 
     private macro __process_params
       {% sub_schema = "" %}
+      {% sub_schema2 = "" %}
       {% path = @type.stringify.split("::") || "" %}
 
       {% if path.size > 1 %}
-        {% sub_schema = path[2..-1].join(".").downcase %}
+        {% sub_schema = path[1..-1].join(".").downcase %}
+        {% sub_schema2 = path[2..-1].join(".").downcase %}
       {% end %}
 
       {% for name, options in FIELD_OPTIONS %}
@@ -46,7 +48,8 @@ module Schema
 
           field_{{name.id}} =
             params[{{key.stringify}}]? ||
-            params["{{sub_schema.id unless sub_schema.starts_with?(".") || sub_schema.empty?}}.{{key}}"]
+            params["{{sub_schema.id unless sub_schema.starts_with?(".") || sub_schema.empty?}}.{{key}}"]? ||
+            params["{{sub_schema2.id unless sub_schema2.starts_with?(".") || sub_schema2.empty?}}.{{key}}"]
 
           {% if field_type.is_a?(Generic) %}
             {% sub_type = field_type.type_vars %}

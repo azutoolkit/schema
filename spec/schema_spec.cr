@@ -29,21 +29,19 @@ class ExampleController
 end
 
 describe Schema do
-  context "for Hash(String, String)" do
-    it "validates params" do
-      params = HTTP::Params.parse(
-        "email=test@example.com&name=john&age=24&alive=true&" +
-        "childrens=Child1,Child2&childrens_ages=1,2&" +
-        "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
-        "address.location.longitude=41.085651&address.location.latitude=-73.858467"
-      )
+  it "defines schema from Hash(String, String)" do
+    params = HTTP::Params.parse(
+      "email=test@example.com&name=john&age=24&alive=true&" +
+      "childrens=Child1,Child2&childrens_ages=1,2&" +
+      "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
+      "address.location.longitude=41.085651&address.location.latitude=-73.858467"
+    )
 
-      user = ExampleController::User.new(params.to_h)
+    user = ExampleController::User.new(params.to_h)
 
-      p user.to_json
-      # address.valid?.should be_true
-      # location.valid?.should be_true
-    end
+    user.valid?.should be_true
+    user.address.valid?.should be_true
+    user.address.location.valid?.should be_true
   end
 
   it "defines a schema from JSON" do
@@ -73,5 +71,14 @@ describe Schema do
     subject.alive.should eq true
     subject.childrens.should eq ["Child 1", "Child 2"]
     subject.childrens_ages.should eq [9, 12]
+  end
+
+  pending "defines a schema from YAML" do
+  end
+
+  pending "validates schema and sub schemas" do
+  end
+
+  pending "parses user defined types using a converter" do
   end
 end

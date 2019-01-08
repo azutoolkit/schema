@@ -235,7 +235,7 @@ API subject to change until marked as released version
 Things left to do:
 
 - [ ] Validate nested - When calling `valid?(:nested)` validates sub schemas.
-- [ ] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
+- [x] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
 - [ ] Document Custom Parser for custom types. Currently the library supports parsing to Custom Types, but yet needs to be documented with a working example
 
 ## Contributing

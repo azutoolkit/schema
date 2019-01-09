@@ -34,5 +34,10 @@ module Schema
 
     def initialize(@value : String)
     end
+
+    def convert(asType : Address.class)
+      p @value.to_f64
+      Address.new
+    end
   end
 end

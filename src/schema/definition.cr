@@ -45,9 +45,10 @@ module Schema
         {% for name, options in FIELD_OPTIONS %}
           {% field_type = CONTENT_ATTRIBUTES[name][:type] %}
           {% key = name.id %}
-
+          p {{key.stringify}}+"[0]", {{sub_schema}}, {{sub_schema2}}
           field_{{name.id}} =
             params[{{key.stringify}}]? ||
+            params[{{key.stringify}}+"[0]"]? ||
             params["{{sub_schema.id unless sub_schema.starts_with?(".") || sub_schema.empty?}}.{{key}}"]? ||
             params["{{sub_schema2.id unless sub_schema2.starts_with?(".") || sub_schema2.empty?}}.{{key}}"]
 

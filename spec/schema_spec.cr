@@ -34,7 +34,8 @@ describe Schema do
       "email=test@example.com&name=john&age=24&alive=true&" +
       "childrens=Child1,Child2&childrens_ages=1,2&" +
       "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
-      "address.location.longitude=41.085651&address.location.latitude=-73.858467"
+      "address.location.longitude=41.085651&address.location.latitude=-73.858467" +
+      ""
     )
 
     user = ExampleController::User.new(params.to_h)

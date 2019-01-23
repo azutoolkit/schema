@@ -14,14 +14,14 @@ Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
-  schemas:
+  schema:
     github: eliasjpr/schema-validation
 ```
 
 ## Usage
 
 ```crystal
-require "schemas"
+require "schema"
 ```
 
 ## Defining Self Validated Schemas

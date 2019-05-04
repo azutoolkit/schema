@@ -15,7 +15,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   schema:
-    github: eliasjpr/schema-validation
+    github: eliasjpr/schema-validations
 ```
 
 ## Usage

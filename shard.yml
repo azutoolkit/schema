@@ -9,8 +9,5 @@ crystal: 0.26.1
 license: MIT
 
 development_dependencies:
-  paramnoia:
-    github: jreinert/paramnoia
   ameba:
     github: veelenga/ameba
-    version: ~> 0.8.0

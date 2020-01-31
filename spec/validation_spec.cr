@@ -102,11 +102,8 @@ describe Schema::Validation do
       subject.errors.clear
       subject.add_custom_rule
 
-      error = subject.errors.first
-
       subject.errors.size.should eq 3
-      error.field.should eq :fake
-      error.message.should eq "fake error message"
+      subject.errors.map(&.message).should contain "fake error message"
     end
   end
 end

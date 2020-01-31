@@ -3,4 +3,3 @@ module Presence
     (!value.nil? && !value.empty?)
   end
 end
-  

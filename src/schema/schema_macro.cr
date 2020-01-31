@@ -1,16 +1,16 @@
 macro schema(name)
-  @[JSON::Field(key: "{{name.id.downcase}}", emit_null: true)]
-  @{{name.id.downcase}} : {{name.id.capitalize}}?
+  @[JSON::Field(key: "{{name.id.underscore}}", emit_null: true)]
+  @{{name.id.underscore}} : {{name.id}}?
 
-  def {{name.id.downcase}}
-    @{{name.id.downcase}}.not_nil!
+  def {{name.id.underscore}}
+    @{{name.id.underscore}}.not_nil!
   end
 
   protected def after_schema_initialize(params : Hash(String, String) | HTTP::Params)
-    @{{name.id.downcase}} = {{name.id.capitalize}}.new(params)
+    @{{name.id.underscore}} = {{name.id}}.new(params)
   end
 
-  struct {{name.id.capitalize}}
+  struct {{name.id}}
     include JSON::Serializable
     include YAML::Serializable
     include Schema::Definition

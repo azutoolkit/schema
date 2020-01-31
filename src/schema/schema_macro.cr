@@ -6,7 +6,7 @@ macro schema(name)
     @{{name.id.downcase}}.not_nil!
   end
 
-  protected def after_schema_initialize(params : Hash(String, String))
+  protected def after_schema_initialize(params : Hash(String, String) | HTTP::Params)
     @{{name.id.downcase}} = {{name.id.capitalize}}.new(params)
   end
 
@@ -21,7 +21,7 @@ macro schema(name)
 end
 
 macro validation
-   include Schema::Validation
+  include Schema::Validation
 
   {{yield}}
 end

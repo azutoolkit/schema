@@ -14,7 +14,7 @@ module Schema
       FIELD_OPTIONS = {} of Nil => Nil
 
       # Custom hook method to initialize dependents schemas
-      protected def after_schema_initialize(params : Hash(String, String))
+      protected def after_schema_initialize(params : Hash(String, String) | HTTP::Params)
       end
 
       macro finished
@@ -41,7 +41,7 @@ module Schema
         getter {{name}} : {{type}}
       {% end %}
 
-      def initialize(params : Hash(String, String))
+      def initialize(params : Hash(String, String) | HTTP::Params)
         {% for name, options in FIELD_OPTIONS %}
           {% field_type = CONTENT_ATTRIBUTES[name][:type] %}
           {% key = name.id %}

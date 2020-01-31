@@ -104,7 +104,7 @@ describe Schema::Validation do
 
       error = subject.errors.first
 
-      subject.errors.size.should eq 1
+      subject.errors.size.should eq 3
       error.field.should eq :fake
       error.message.should eq "fake error message"
     end

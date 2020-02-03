@@ -11,6 +11,7 @@ module Schema
     include LessThanOrEqual
     include RegularExpression
     include Size
+    include Presence
   end
 
   module Validation

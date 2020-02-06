@@ -11,5 +11,9 @@ module Schema
     def <<(error : Error(T, S))
       push error unless includes?(error)
     end
+
+    def messages
+      map { |e| e.message }
+    end
   end
 end

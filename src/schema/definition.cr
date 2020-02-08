@@ -46,10 +46,7 @@ module Schema
           {% field_type = CONTENT_ATTRIBUTES[name][:type] %}
           {% key = name.id %}
 
-          field_{{name.id}} =
-            params[{{key.stringify}}]? ||
-            params["{{sub_schema.id unless sub_schema.starts_with?(".") || sub_schema.empty?}}.{{key}}"]? ||
-            params["{{sub_schema2.id unless sub_schema2.starts_with?(".") || sub_schema2.empty?}}.{{key}}"]
+          field_{{name.id}} = params[{{key.stringify}}]? || {{field_type}}.new 
 
           {% if field_type.is_a?(Generic) %}
             {% sub_type = field_type.type_vars %}

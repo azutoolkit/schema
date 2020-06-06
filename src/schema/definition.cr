@@ -29,7 +29,7 @@ module Schema
         getter {{name}} : {{type}}
       {% end %}
 
-      def initialize(params : Hash(String, String) | HTTP::Params, prefix = "")
+      def initialize(params : Hash(String, String) | HTTP::Params | _, prefix = "")
         {% for name, options in FIELD_OPTIONS %}
           {% field_type = CONTENT_ATTRIBUTES[name][:type] %}
           {% key = name.id %}

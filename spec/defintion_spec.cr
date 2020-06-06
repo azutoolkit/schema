@@ -15,7 +15,7 @@ struct User
   param childrens_ages : Array(Int32)
 
   schema Address do
-    param city : String
+    param city : String 
 
     schema Location do
       param latitude : Float32
@@ -50,12 +50,10 @@ describe "Schema::Definition" do
     subject.alive.should eq true
     subject.childrens.should eq ["Child 1", "Child 2"]
     subject.childrens_ages.should eq [9, 12]
-
-    p subject
   end
 
   it "defines a schema from JSON" do
-    json = %({ "user": {
+    json = %({"user": { 
       "email": "fake@example.com",
       "name": "Fake name",
       "age": 25,
@@ -81,7 +79,5 @@ describe "Schema::Definition" do
     subject.alive.should eq true
     subject.childrens.should eq ["Child 1", "Child 2"]
     subject.childrens_ages.should eq [9, 12]
-
-    # p subject.to_json
   end
 end

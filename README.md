@@ -100,9 +100,9 @@ subject   = ExampleController.new(params.to_h)
 Accessing the generated schemas:
 
 ```crystal
-user      = subject.user     - ExampleController::User
-address   = user.address     - ExampleController::User::Address
-location  = address.location - ExampleController::User::Address::Location
+user      = subject.user     - ExampleController
+address   = user.address     - ExampleController::Address
+location  = address.location - ExampleController::Address::Location
 ```
 
 ## Example parsing from JSON
@@ -117,7 +117,7 @@ json = %({ "user": {
       "childrens_ages": [9, 12]
     }})
 
-user = ExampleController::User.from_json(json, "user")
+user = ExampleController.from_json(json, "user")
 ```
 
 

@@ -79,11 +79,16 @@ module Schema
           rules << Schema::Rule.new(:{{name.id}}, {{options[:message]}} || "") do |rule|
           {% for predicate, expected_value in options %}
             {% custom_validator = predicate.id.stringify.split('_').map(&.capitalize).join("") + "Validator" %}
-            {% if !["message", "type"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] == nil %}
+            {% if !["message", "type", "inner", "nilable"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] == nil %}
             rule.{{predicate.id}}?(@{{name.id}}, {{expected_value}}) &
             {% end %}
           {% end %}
+          
+          {% if options[:inner] %}
+          @{{name.id}}.valid?
+          {% else %}
           true
+          {% end %}
           end
         {% end %}
       end

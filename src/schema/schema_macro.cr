@@ -1,23 +1,21 @@
-macro schema(name)
-  @[JSON::Field(key: "{{name.id.underscore}}", emit_null: true)]
-  @{{name.id.underscore}} : {{name.id}}?
+macro schema(name=nil, nilable=false)
+  {%if name!=nil%}
+  param {{name.id.underscore}} : {{name.id}}, inner: true, nilable: required
+  {% end %}
 
-  def {{name.id.underscore}}
-    @{{name.id.underscore}}.not_nil!
-  end
-
-  protected def after_schema_initialize(params : Hash(String, String) | HTTP::Params)
-    @{{name.id.underscore}} = {{name.id}}.new(params)
-  end
-
+  {%if name!=nil%}
   struct {{name.id}}
-    include JSON::Serializable
-    include YAML::Serializable
-    include Schema::Definition
-    include Schema::Validation
+  include JSON::Serializable
+  include YAML::Serializable
+  include Schema::Definition
+  include Schema::Validation
+  {% end %}
 
-    {{yield}}
+  {{yield}}
+
+  {%if name!=nil%}
   end
+  {% end %}
 end
 
 macro validation

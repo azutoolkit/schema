@@ -70,6 +70,7 @@ ExampleController::User.from_yaml(pyaload: String)
 ExampleController::User.new(params: Hash(String, String))
 ```
 
+
 ### Schema instance methods
 
 ```crystal
@@ -120,6 +121,31 @@ json = %({ "user": {
 user = ExampleController.from_json(json, "user")
 ```
 
+### Registring Schema Custom Converters
+
+Custom converters allows you to define how to parse your custom data types. To Define a custom converter simply define a `convert` method for your custom type. 
+
+For example lets say we want to convert a `string` time representation to `Time` type.
+
+```crystal
+module Schema
+  module CastAs(T)
+    def convert(asType : Time.class)
+      asType.parse(@value, "%m-%d-%Y", Time::Location::UTC)
+    end
+  end
+end
+```
+
+The implicit `@value` contains the actual string to parse as `Time`.
+
+The definition of the `convert(asType : Time.class)` method registers the custome converter. 
+
+To use your converter simply define `param` with your custom type and the schema framework will do the rest.
+
+```crystal
+param ended_at : Time
+```
 
 # Validations
 
@@ -234,7 +260,7 @@ API subject to change until marked as released version
 
 Things left to do:
 
-- [ ] Validate nested - When calling `valid?(:nested)` validates sub schemas.
+- [x] Validate nested - When calling `valid?` validates inner schemas.
 - [x] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
 - [ ] Document Custom Parser for custom types. Currently the library supports parsing to Custom Types, but yet needs to be documented with a working example
 

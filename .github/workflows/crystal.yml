@@ -22,8 +22,5 @@ jobs:
     - name: Check code style
       run: crystal tool format
     
-    - name: Build binary to test
-      run: shards build schema
-    
     - name: Run tests
       run: crystal spec

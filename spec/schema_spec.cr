@@ -21,8 +21,8 @@ struct ExampleController
       param city : String, size: 2, in: %w[NY NJ CA UT]
 
       schema Location do
-        param longitude : Float32
-        param latitude : Float32
+        param longitude : Float64
+        param latitude : Float64
         param useful : Bool, eq: true
       end
     end
@@ -56,7 +56,7 @@ describe Schema do
       "childrens_ages": [9, 12],
       "address": {
         "city": "NY",
-        "street": "slepy",
+        "street": "sleepy",
         "zip": "12345",
         "location": {
           "longitude": 123.123,
@@ -74,6 +74,10 @@ describe Schema do
     subject.alive.should eq true
     subject.childrens.should eq ["Child 1", "Child 2"]
     subject.childrens_ages.should eq [9, 12]
+    subject.address.city.should eq "NY"
+    subject.address.street.should eq "sleepy"
+    subject.address.zip.should eq "12345"
+    subject.address.location.longitude.should eq 123.123
   end
 
   it "validates schema and sub schemas" do

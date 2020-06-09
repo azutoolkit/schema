@@ -262,7 +262,7 @@ Things left to do:
 
 - [x] Validate nested - When calling `valid?` validates inner schemas.
 - [x] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
-- [ ] Document Custom Parser for custom types. Currently the library supports parsing to Custom Types, but yet needs to be documented with a working example
+- [x] Document Custom Converter for custom types.
 
 ## Contributing
 

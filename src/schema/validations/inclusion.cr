@@ -1,9 +1,9 @@
 module Inclusion
-  def in?(value, in : Array)
-    in.includes?(value)
+  def in?(value, included : Array)
+    included.includes?(value)
   end
 
-  def in?(value, in : Range)
-    in.includes?(value)
+  def in?(value, included : Range)
+    included.includes?(value)
   end
 end

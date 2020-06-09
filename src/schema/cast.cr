@@ -1,5 +1,5 @@
 module Schema
-  module CastAs(T)
+  module Cast(T)
     def value : T
       convert(T)
     end
@@ -30,7 +30,7 @@ module Schema
   end
 
   class ConvertTo(T)
-    include CastAs(T)
+    include Cast(T)
 
     def initialize(@value : String)
     end

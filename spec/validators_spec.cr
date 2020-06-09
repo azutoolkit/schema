@@ -20,6 +20,10 @@ describe Schema::Validators do
     it { gte?(1, 0).should be_true }
     it { gte?(1, 1).should be_true }
     it { gte?(1, 2).should be_false }
+    it { gte?(1.day.from_now, Time.utc).should be_true }
+    it { gte?(1.day.ago, Time.utc).should be_false }
+    time = Time.utc
+    it { gte?(time, time).should be_true }
   end
 
   describe "#gt?" do
@@ -27,6 +31,8 @@ describe Schema::Validators do
     it { gt?(1, 0).should be_true }
     it { gt?(1, 1).should be_false }
     it { gt?(1, 2).should be_false }
+    it { gt?(1.day.from_now, Time.utc).should be_true }
+    it { gt?(1.day.ago, Time.utc).should be_false }
   end
 
   describe "#lte?" do
@@ -34,6 +40,9 @@ describe Schema::Validators do
     it { lte?(0, 1).should be_true }
     it { lte?(1, 1).should be_true }
     it { lte?(2, 1).should be_false }
+    it { lte?(1.day.from_now, Time.utc).should be_false }
+    it { lte?(1.day.ago, Time.utc).should be_true }
+    it { lte?(1.day.ago, 1.day.ago).should be_true }
   end
 
   describe "#lt?" do
@@ -41,6 +50,8 @@ describe Schema::Validators do
     it { lt?(0, 1).should be_true }
     it { lt?(1, 1).should be_false }
     it { lt?(1, 2).should be_true }
+    it { lt?(1.day.from_now, Time.utc).should be_false }
+    it { lt?(1.day.ago, Time.utc).should be_true }
   end
 
   describe "#in?" do

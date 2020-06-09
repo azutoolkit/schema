@@ -129,10 +129,29 @@ For example lets say we want to convert a `string` time representation to `Time`
 
 ```crystal
 module Schema
-  module CastAs(T)
+  module Cast(T)
     def convert(asType : Time.class)
       asType.parse(@value, "%m-%d-%Y", Time::Location::UTC)
     end
+  end
+end
+```
+
+or 
+
+```crystal
+class CustomType
+  include Schema::Cast(CustomType)
+
+  def initialize(@value : String)
+  end
+
+  def value
+    convert(self.class)
+  end
+
+  def convert(asType : self.class)
+    @value.split(",").map { |i| i.to_i32 }
   end
 end
 ```

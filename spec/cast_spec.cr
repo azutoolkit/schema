@@ -1,7 +1,8 @@
 require "spec"
+require "../src/schema"
 
 class CustomType
-  include Schema::CastAs(CustomType)
+  include Schema::Cast(CustomType)
 
   def initialize(@value : String)
   end

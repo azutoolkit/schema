@@ -6,4 +6,8 @@ module LessThan
   def lt?(value : Float, compare : Float)
     value < compare
   end
+
+  def lt?(value : Time, compare : Time)
+    value < compare
+  end
 end

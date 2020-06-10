@@ -3,7 +3,6 @@ require "yaml"
 
 module Schema
   module Definition
-
     macro included
       CONTENT_ATTRIBUTES = {} of Nil => Nil
       FIELD_OPTIONS = {} of Nil => Nil

@@ -1,9 +1,9 @@
-macro schema(name=nil, nilable=false)
-  {%if name!=nil%}
+macro schema(name = nil, nilable = false)
+  {% if name != nil %}
   param {{name.id.underscore}} : {{name.id}}, inner: true, nilable: required
   {% end %}
 
-  {%if name!=nil%}
+  {% if name != nil %}
   struct {{name.id}}
   include JSON::Serializable
   include YAML::Serializable
@@ -13,7 +13,7 @@ macro schema(name=nil, nilable=false)
 
   {{yield}}
 
-  {%if name!=nil%}
+  {% if name != nil %}
   end
   {% end %}
 end

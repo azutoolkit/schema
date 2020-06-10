@@ -15,7 +15,7 @@ struct User
   param childrens_ages : Array(Int32)
 
   schema Address do
-    param city : String 
+    param city : String
 
     schema Location do
       param latitude : Float32
@@ -53,7 +53,7 @@ describe "Schema::Definition" do
   end
 
   it "defines a schema from JSON" do
-    json = %({"user": { 
+    json = %({"user": {
       "email": "fake@example.com",
       "name": "Fake name",
       "age": 25,

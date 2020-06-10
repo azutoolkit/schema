@@ -1,5 +1,7 @@
 # Schema-Validations
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bcab4bfe3c9c4c45a832fd724aa1ffea)](https://app.codacy.com/manual/eliasjpr/schema?utm_source=github.com&utm_medium=referral&utm_content=eliasjpr/schema&utm_campaign=Badge_Grade_Dashboard)
+
 ![Crystal CI](https://github.com/eliasjpr/schema/workflows/Crystal%20CI/badge.svg)
 
 Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas is to resolve precisely this problem with the added benefit of performing business rules validation to have the params adhere to a `"business schema."`

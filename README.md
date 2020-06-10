@@ -70,7 +70,6 @@ ExampleController::User.from_yaml(pyaload: String)
 ExampleController::User.new(params: Hash(String, String))
 ```
 
-
 ### Schema instance methods
 
 ```crystal
@@ -121,7 +120,7 @@ json = %({ "user": {
 user = ExampleController.from_json(json, "user")
 ```
 
-### Registring Schema Custom Converters
+## Registring Schema Custom Converters
 
 Custom converters allows you to define how to parse your custom data types. To Define a custom converter simply define a `convert` method for your custom type. 
 
@@ -166,7 +165,7 @@ To use your converter simply define `param` with your custom type and the schema
 param ended_at : Time
 ```
 
-# Validations
+## Validations
 
 You can also perform validations for existing objects without the use of Schemas.
 
@@ -248,10 +247,10 @@ end
 
 The differences between a custom validator and a method predicate are:
 
-- Custom validators receive an instance of the object as a `record` instance var.
-- Custom validators allow for more control over validations.
-- Predicates are assertions against the class properties (instance var).
-- Predicates matches property value with predicate value.
+-   Custom validators receive an instance of the object as a `record` instance var.
+-   Custom validators allow for more control over validations.
+-   Predicates are assertions against the class properties (instance var).
+-   Predicates matches property value with predicate value.
 
 ### Built in Predicates
 
@@ -279,18 +278,18 @@ API subject to change until marked as released version
 
 Things left to do:
 
-- [x] Validate nested - When calling `valid?` validates inner schemas.
-- [x] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
-- [x] Document Custom Converter for custom types.
+-   [x] Validate nested - When calling `valid?` validates inner schemas.
+-   [x] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
+-   [x] Document Custom Converter for custom types.
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/schemas/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+1.  Fork it (<https://github.com/your-github-user/schemas/fork>)
+2.  Create your feature branch (`git checkout -b my-new-feature`)
+3.  Commit your changes (`git commit -am 'Add some feature'`)
+4.  Push to the branch (`git push origin my-new-feature`)
+5.  Create a new Pull Request
 
 ## Contributors
 
-- [@eliasjpr](https://github.com/eliasjpr) Elias J. Perez - creator, maintainer
+-   [@eliasjpr](https://github.com/eliasjpr) Elias J. Perez - creator, maintainer

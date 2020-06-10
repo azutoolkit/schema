@@ -83,7 +83,6 @@ module Schema
             rule.{{predicate.id}}?(@{{name.id}}, {{expected_value}}) &
             {% end %}
           {% end %}
-          
           {% if options[:inner] %}
           @{{name.id}}.valid?
           {% else %}

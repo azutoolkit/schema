@@ -60,7 +60,7 @@ module Schema
       end
 
       def validate!
-        valid? || raise Schema::Error.new(errors)
+        valid? || raise errors.messages.join ","
       end
 
       def errors
@@ -79,7 +79,7 @@ module Schema
           rules << Schema::Rule.new(:{{name.id}}, {{options[:message]}} || "") do |rule|
           {% for predicate, expected_value in options %}
             {% custom_validator = predicate.id.stringify.split('_').map(&.capitalize).join("") + "Validator" %}
-            {% if !["message", "type", "inner", "nilable"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] == nil %}
+            {% if !["message", "param_type", "type", "inner", "nilable"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] == nil %}
             rule.{{predicate.id}}?(@{{name.id}}, {{expected_value}}) &
             {% end %}
           {% end %}

@@ -29,6 +29,7 @@ class UserModel
   property alive : Bool
   property childrens : Array(String)
   property childrens_ages : Array(Int32)
+  property last_name : String
 
   validation do
     use UniqueRecordValidator, EmailValidator
@@ -38,6 +39,7 @@ class UserModel
     validate alive, eq: true
     validate childrens
     validate childrens_ages, if: something?
+    validate last_name, presence: true, message: "Last name is required"
 
     predicates do
       def some?(value, compare) : Bool
@@ -50,7 +52,7 @@ class UserModel
     end
   end
 
-  def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages)
+  def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages, @last_name)
   end
 
   def something?
@@ -69,14 +71,15 @@ describe Schema::Validation do
     25,
     true,
     ["Child 1", "Child 2"],
-    [9, 12]
+    [9, 12],
+    ""
   )
 
   context "with custom validator" do
     it "it validates the user" do
       subject.errors.clear
       subject.valid?.should be_falsey
-      subject.errors.map(&.message).should eq ["Email must be valid!", "Must be 24 and 30 years old"]
+      subject.errors.map(&.message).should eq ["Email must be valid!", "Must be 24 and 30 years old", "Last name is required"]
     end
   end
 
@@ -84,7 +87,7 @@ describe Schema::Validation do
     it "validates the user" do
       subject.errors.clear
       subject.valid?.should be_falsey
-      subject.errors.map(&.message).should eq ["Email must be valid!", "Must be 24 and 30 years old"]
+      subject.errors.map(&.message).should eq ["Email must be valid!", "Must be 24 and 30 years old", "Last name is required"]
     end
   end
 
@@ -95,14 +98,15 @@ describe Schema::Validation do
       25,
       true,
       ["Child 1", "Child 2"],
-      [9, 12]
+      [9, 12],
+      ""
     )
 
     it "adds custom rules" do
       subject.errors.clear
       subject.add_custom_rule
 
-      subject.errors.size.should eq 3
+      subject.errors.size.should eq 4
       subject.errors.map(&.message).should contain "fake error message"
     end
   end

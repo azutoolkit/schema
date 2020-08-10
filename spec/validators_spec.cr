@@ -15,6 +15,12 @@ describe Schema::Validators do
     it { exclude?(1, (0..3)).should be_false }
   end
 
+  describe "#presense?" do
+    it { presence?("", nil).should be_false }
+    it { presence?(nil, nil).should be_false }
+    it { presence?("hello", nil).should be_true }
+  end
+
   describe "#gte?" do
     it { gte?(1, -1).should be_true }
     it { gte?(1, 0).should be_true }

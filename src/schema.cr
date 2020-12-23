@@ -3,9 +3,7 @@ require "./schema/error"
 require "./schema/errors"
 require "./schema/rule"
 require "./schema/rules"
-require "./schema/cast"
 require "./schema/definition"
-require "./schema/schema_macro"
 
 # A schema is an abstraction to handle validation of
 # arbitrary data or object state. It is a fully self-contained

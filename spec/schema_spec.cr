@@ -3,11 +3,9 @@ require "http"
 
 struct ExampleController
   include JSON::Serializable
-  include YAML::Serializable
   include Schema::Definition
   include Schema::Validation
 
-  schema do
     param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
     param name : String, size: (1..20)
     param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
@@ -26,7 +24,6 @@ struct ExampleController
         param useful : Bool, eq: true
       end
     end
-  end
 end
 
 describe Schema do
@@ -43,7 +40,7 @@ describe Schema do
 
     user.valid?.should be_true
     user.address.valid?.should be_true
-    user.address.location.valid?.should be_true
+    user.address.location.not_nil!.valid?.should be_true
   end
 
   it "defines a schema from JSON" do

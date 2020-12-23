@@ -1,5 +1,10 @@
 require "./validations/*"
 
+macro validation
+  include Schema::Validation
+  {{yield}}
+end
+
 module Schema
   module Validators
     include Equal
@@ -18,6 +23,8 @@ module Schema
     CONTENT_ATTRIBUTES = {} of Nil => Nil
     FIELD_OPTIONS      = {} of Nil => Nil
     CUSTOM_VALIDATORS  = {} of Nil => Nil
+
+    
 
     macro validate(attribute, **options)
       {% FIELD_OPTIONS[attribute] = options %}
@@ -50,7 +57,6 @@ module Schema
       {% custom_types = CUSTOM_VALIDATORS.values.map { |v| v.id }.join("|") %}
 
       @[JSON::Field(ignore: true)]
-      @[YAML::Field(ignore: true)]
       getter rules : Schema::Rules({{custom_validators.id}}, {{custom_types.id}}) =
          Schema::Rules({{custom_validators.id}},{{custom_types.id}}).new
 

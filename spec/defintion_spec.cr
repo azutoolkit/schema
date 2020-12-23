@@ -1,57 +1,35 @@
 require "./spec_helper"
-require "json"
 
 struct User
-  include JSON::Serializable
-  include YAML::Serializable
   include Schema::Definition
-  include Schema::Validation
 
-  param email : String
-  param name : String
-  param age : Int32
-  param alive : Bool
-  param childrens : Array(String)
-  param childrens_ages : Array(Int32)
+  getter email : String
+  getter name : String
+  getter age : Int32
+  getter alive : Bool
+  getter childrens : Array(String)
+  getter childrens_ages : Array(Int32)
 
-  schema Address do
-    param city : String
+  class Address
+    include Schema::Definition
 
-    schema Location do
-      param latitude : Float32
+    getter city : String
+    getter location : Location
+    getter phone : Phone
+
+    class Location
+      include Schema::Definition
+      getter latitude : Float32
     end
-  end
-
-  schema Phone do
-    param number : String
+  
+    class Phone
+      include Schema::Definition
+      getter number : String
+    end
   end
 end
 
 describe "Schema::Definition" do
-  params = {
-    "email"                     => "fake@example.com",
-    "name"                      => "Fake name",
-    "age"                       => "25",
-    "alive"                     => "true",
-    "childrens"                 => "Child 1,Child 2",
-    "childrens_ages"            => "9,12",
-    "phone.number"              => "123456789",
-    "address.city"              => "NY",
-    "address.location.latitude" => "1234.12",
-  }
-
-  it "defines a schema object from Hash(String, Stirng)" do
-    subject = User.new(params)
-
-    subject.should be_a User
-    subject.email.should eq "fake@example.com"
-    subject.name.should eq "Fake name"
-    subject.age.should eq 25
-    subject.alive.should eq true
-    subject.childrens.should eq ["Child 1", "Child 2"]
-    subject.childrens_ages.should eq [9, 12]
-  end
-
   it "defines a schema from JSON" do
     json = %({"user": {
       "email": "fake@example.com",
@@ -72,7 +50,6 @@ describe "Schema::Definition" do
     }})
 
     subject = User.from_json(json, "user")
-
     subject.email.should eq "fake@example.com"
     subject.name.should eq "Fake name"
     subject.age.should eq 25

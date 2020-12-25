@@ -1,6 +1,5 @@
 require "json"
 require "http"
-require "./parse_error"
 
 module Schema
   annotation Settings
@@ -13,7 +12,7 @@ module Schema
     macro included
       include JSON::Serializable
 
-      {% settings = @type.annotation(::Schema::Settings) || { strict: false, unmapped: false } %}
+      {% settings = @type.annotation(::Schema::Settings) || {strict: false, unmapped: false} %}
       {% raise "strict and unmapped are mutually exclusive" if settings[:strict] && settings[:unmapped] %}
       {% if settings[:strict] %}
         include JSON::Serializable::Strict
@@ -61,7 +60,7 @@ module Schema
 
     def initialize(*, __http_params_from_schema http_params : HTTP::Params, __path_from_schema path = [] of String)
       {% begin %}
-        {% settings = @type.annotation(::Schema::Settings) || { strict: false, unmapped: false } %}
+        {% settings = @type.annotation(::Schema::Settings) || {strict: false, unmapped: false} %}
         {% if settings[:strict] || settings[:unmapped] %}
           handled_param_names = [] of String
         {% end %}
@@ -71,7 +70,7 @@ module Schema
           {% nilable = ivar.type.nilable? %}
           {% has_default = ivar.has_default_value? %}
           {% default = has_default ? ivar.default_value : nil %}
-          {% ann = ivar.annotation(::Schema::Params::Field) %}
+          {% ann = ivar.annotation(::Schema::Definition::Field) %}
           {% converter = ann && ann[:converter] %}
           {% key = (ann && ann[:key] || ivar.name.stringify) %}
 
@@ -145,7 +144,7 @@ module Schema
               handled_param_names << "#{%param_name}[]"
             {% end %}
 
-          {% elsif non_nil_type <= ::Schema::Params %}
+          {% elsif non_nil_type <= ::Schema::Definition %}
             %nested_params = HTTP::Params.new({} of String => Array(String))
             http_params.each do |key, value|
               if key.starts_with?("#{%param_name}[")

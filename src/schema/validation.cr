@@ -1,68 +1,65 @@
-require "./validations/*"
-
-macro validation
-  include Schema::Validation
-  {{yield}}
-end
+require "./validation/validators"
+require "./validation/error"
+require "./validation/validator"
+require "./validation/constraint"
 
 module Schema
-  module Validators
-    include Equal
-    include Exclusion
-    include GreaterThan
-    include GreaterThanOrEqual
-    include Inclusion
-    include LessThan
-    include LessThanOrEqual
-    include RegularExpression
-    include Size
-    include Presence
-  end
-
   module Validation
-    CONTENT_ATTRIBUTES = {} of Nil => Nil
-    FIELD_OPTIONS      = {} of Nil => Nil
-    CUSTOM_VALIDATORS  = {} of Nil => Nil
-
-    
-
-    macro validate(attribute, **options)
-      {% FIELD_OPTIONS[attribute] = options %}
-      {% CONTENT_ATTRIBUTES[attribute] = options || {} of Nil => Nil %}
-    end
-
     macro use(*validators)
       {% for validator in validators %}
-        {% CUSTOM_VALIDATORS[validator.stringify] = @type %}
+      {% SCHEMA_VALIDATORS << validator %}
       {% end %}
+    end
+  
+    macro validate(attribute, **options)
+      {% SCHEMA_VALIDATIONS[attribute] = options %}
     end
 
     macro predicates
-      module ::Schema
-        module Validators
-          {{yield}}
+      module Schema::Validators
+        {{yield}}
+      end
+    end
+
+    macro create_validator(type_validator)
+      {% type_validator = type_validator.resolve %}
+    
+      module Validator({{type_validator}})
+        def self.validate(instance : {{type_validator}})
+          errors = Array(Schema::Error).new
+          rules = Array(Schema::Constraint | Schema::Validator).new
+          validations(rules, instance)
+          rules.reduce([] of Schema::Error) do |errors, rule|
+            errors + rule.valid?
+          end
+        end
+    
+        private def self.validations(rules, instance)
+          {% for validtor in type_validator.constant(:SCHEMA_VALIDATORS) %}
+          rules << {{validtor}}.new(instance)
+          {% end %}
+          
+          rules << Schema::Constraint.new do |rule, errors|
+            {% for name, options in type_validator.constant(:SCHEMA_VALIDATIONS)  %}
+              {% for predicate, expected_value in options %}
+                {% if !["message"].includes?(predicate.stringify) %}
+                unless rule.{{predicate.id}}?(instance.{{name.id}}, {{expected_value}})
+                  errors << Schema::Error.new(:{{name.id}}, {{options["message"] || "Invalid field: " +  name.stringify}}) 
+                end
+                {% end %}
+              {% end %}
+            {% end %}
+          end
         end
       end
     end
 
     macro included
-      macro finished
-        __process_validation
-      end
-    end
-
-    macro __process_validation
-      {% CUSTOM_VALIDATORS["Schema::Rule"] = "Symbol" %}
-      {% custom_validators = CUSTOM_VALIDATORS.keys.map { |v| v.id }.join("|") %}
-      {% custom_types = CUSTOM_VALIDATORS.values.map { |v| v.id }.join("|") %}
-
-      @[JSON::Field(ignore: true)]
-      getter rules : Schema::Rules({{custom_validators.id}}, {{custom_types.id}}) =
-         Schema::Rules({{custom_validators.id}},{{custom_types.id}}).new
+      SCHEMA_VALIDATORS = [] of Nil
+      SCHEMA_VALIDATIONS = {} of Nil => Nil
 
       def valid?
-        load_validations_rules
-        rules.errors.empty?
+        errors.empty?
       end
 
       def validate!
@@ -70,32 +67,11 @@ module Schema
       end
 
       def errors
-        rules.errors
+        Validator({{ @type }}).validate(self)
       end
 
-      private def load_validations_rules
-        {% for name, options in FIELD_OPTIONS %}
-          {% for predicate, expected_value in options %}
-            {% custom_validator = predicate.id.stringify.split('_').map(&.capitalize).join("") + "Validator" %}
-            {% if !["message", "type"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] != nil %}
-            rules << {{custom_validator.id}}.new(self, {{options[:message]}} || "")
-            {% end %}
-          {% end %}
-
-          rules << Schema::Rule.new(:{{name.id}}, {{options[:message]}} || "") do |rule|
-          {% for predicate, expected_value in options %}
-            {% custom_validator = predicate.id.stringify.split('_').map(&.capitalize).join("") + "Validator" %}
-            {% if !["message", "param_type", "type", "inner", "nilable"].includes?(predicate.stringify) && CUSTOM_VALIDATORS[custom_validator] == nil %}
-            rule.{{predicate.id}}?(@{{name.id}}, {{expected_value}}) &
-            {% end %}
-          {% end %}
-          {% if options[:inner] %}
-          @{{name.id}}.valid?
-          {% else %}
-          true
-          {% end %}
-          end
-        {% end %}
+      macro finished
+        create_validator(\{{ @type }})
       end
     end
   end

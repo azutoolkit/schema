@@ -1,28 +1,9 @@
 require "./spec_helper"
-
-class EmailValidator
-  getter :record, :message
-
-  def initialize(@record : UserModel, @message : String)
-  end
-
-  def valid?
-    true
-  end
-end
-
-class UniqueRecordValidator
-  getter :record, :message
-
-  def initialize(@record : UserModel, @message : String)
-  end
-
-  def valid?
-    false
-  end
-end
+require "../src/schema/validation"
 
 class UserModel
+  include Schema::Validation
+
   property email : String
   property name : String
   property age : Int32
@@ -31,81 +12,78 @@ class UserModel
   property childrens_ages : Array(Int32)
   property last_name : String
 
-  validation do
-    use UniqueRecordValidator, EmailValidator
-    validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true, email: true
-    validate name, size: (1..20)
-    validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old", some: "hello"
-    validate alive, eq: true
-    validate childrens
-    validate childrens_ages, if: something?
-    validate last_name, presence: true, message: "Last name is required"
+  use EmailValidator, UniqueRecordValidator
+  validate :email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
+  validate :name, size: (1..20)
+  validate :age, gte: 18, lte: 25, message: "Age must be 18 and 25 years old"
+  validate :alive, eq: true
+  validate :last_name, presence: true, message: "Last name is invalid"
 
-    predicates do
-      def some?(value, compare) : Bool
-        false
-      end
+  predicates do
+    def some?(value : String, some) : Bool
+      (!value.nil? && value != "") && !some.nil?
+    end
 
-      def if?(value : Array(Int32), bool : Bool) : Bool
-        !bool
-      end
+    def if?(value : Array(Int32), bool : Bool) : Bool
+      !bool
     end
   end
 
   def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages, @last_name)
   end
 
-  def something?
-    false
+  def add_custom_rule
+    errors << Schema::Error.new(:fake, "fake error message")
+  end
+end
+
+class EmailValidator < Schema::Validator
+  include Schema::Validators
+  getter :record, :field, :message
+
+  def initialize(@record : UserModel)
+    @field = :email
+    @message = "Email must be valid!"
   end
 
-  def add_custom_rule
-    errors << {:fake, "fake error message"}
+  def valid? : Array(Schema::Error)
+    [] of Schema::Error
+  end
+end
+
+class UniqueRecordValidator < Schema::Validator
+  getter :record, :field, :message
+
+  def initialize(@record : UserModel)
+    @field = :email
+    @message = "Record must be unique!"
+  end
+
+  def valid? : Array(Schema::Error)
+    [] of Schema::Error
   end
 end
 
 describe Schema::Validation do
-  subject = UserModel.new(
-    "fake@example.com",
-    "Fake name",
-    25,
-    true,
-    ["Child 1", "Child 2"],
-    [9, 12],
-    ""
-  )
-
   context "with custom validator" do
-    it "it validates the user" do
-      subject.errors.clear
-      subject.valid?.should be_falsey
-      subject.errors.map(&.message).should eq ["Email must be valid!", "Must be 24 and 30 years old", "Last name is required"]
-    end
-  end
+    subject = UserModel.new(
+      "bad", "Fake name", 38, true, ["Child 1", "Child 2"], [9, 12], ""
+    )
 
-  context "with custom predicate" do
-    it "validates the user" do
-      subject.errors.clear
+    it "it validates the user" do
       subject.valid?.should be_falsey
-      subject.errors.map(&.message).should eq ["Email must be valid!", "Must be 24 and 30 years old", "Last name is required"]
+      subject.errors.map(&.message).should eq ["Email must be valid!", "Age must be 18 and 25 years old", "Last name is invalid"]
     end
   end
 
   context "when adding your own errors" do
     subject = UserModel.new(
-      "fake@example.com",
-      "Fake name",
-      25,
-      true,
-      ["Child 1", "Child 2"],
-      [9, 12],
-      ""
+      "bad", "Fake name", 25, true, ["Child 1", "Child 2"], [9, 12], "JOhn"
     )
 
     it "adds custom rules" do
-      subject.errors.clear
       subject.add_custom_rule
-
+      p subject.errors
       subject.errors.size.should eq 4
       subject.errors.map(&.message).should contain "fake error message"
     end

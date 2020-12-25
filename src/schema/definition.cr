@@ -27,11 +27,11 @@ module Schema
         new(HTTP::Params.parse(string))
       end
 
-      def self.new(http_params : HTTP::Params, path : Array(String) = [] of String)
+      def self.new(http_params, path : Array(String) = [] of String)
         new_from_http_params(http_params, path)
       end
 
-      private def self.new_from_http_params(http_params : HTTP::Params, path : Array(String) = [] of String)
+      private def self.new_from_http_params(http_params, path : Array(String) = [] of String)
         instance = allocate
         instance.initialize(__http_params_from_schema: http_params, __path_from_schema: path)
         GC.add_finalizer(instance) if instance.responds_to?(:finalize)

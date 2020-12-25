@@ -5,6 +5,15 @@ require "./validation/constraint"
 
 module Schema
   module Validation
+    class ValidationError < Exception
+      def initialize(@errors : Array(Error))
+      end
+
+      def message
+        @errors.map(&.message).join(",")
+      end
+    end
+
     macro use(*validators)
       {% for validator in validators %}
       {% SCHEMA_VALIDATORS << validator %}
@@ -63,7 +72,7 @@ module Schema
       end
 
       def validate!
-        valid? || raise errors.messages.join ","
+        valid? || raise ValidationError.new(errors)
       end
 
       def errors

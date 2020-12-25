@@ -16,6 +16,8 @@ describe Schema::Definition do
     p.add("address[location][latitude]", "-73.858467")
     p.add("address[location][useful]", "true")
   end
+
+  p params
   
   it "defines schema from Hash(String, String)" do
     user = Example.from_urlencoded(params)

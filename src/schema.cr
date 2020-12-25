@@ -8,5 +8,5 @@ require "./schema/validation"
 # The Schema macros helps you define schemas and assists
 # with instantiating and validating data with those schemas at runtime.
 module Schema
-  VERSION = "0.1.0"
+  VERSION = "0.2.0"
 end

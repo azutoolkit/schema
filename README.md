@@ -32,34 +32,36 @@ Schemas are defined as value objects, meaning structs, which are NOT mutable,
 making them ideal to pass schema objects as arguments to constructors.
 
 ```crystal
-class ExampleController
-  getter params : Hash(String, String)
+class Example
+  include Schema::Definition
+  include Schema::Validation
 
-  def initialize(@params)
+  property email : String
+  property name : String
+  property age : Int32
+  property alive : Bool
+  property childrens : Array(String)
+  property childrens_ages : Array(Int32)
+  property last_name : String
+
+  use EmailValidator, UniqueRecordValidator
+  validate :email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
+  validate :name, size: (1..20)
+  validate :age, gte: 18, lte: 25, message: "Age must be 18 and 25 years old"
+  validate :alive, eq: true
+  validate :last_name, presence: true, message: "Last name is invalid"
+
+  predicates do
+    def some?(value : String, some) : Bool
+      (!value.nil? && value != "") && !some.nil?
+    end
+
+    def if?(value : Array(Int32), bool : Bool) : Bool
+      !bool
+    end
   end
 
-  schema User do
-    param email : String, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!"
-    param name : String, size: (1..20)
-    param age : Int32, gte: 24, lte: 25, message: "Must be 24 and 30 years old"
-    param alive : Bool, eq: true
-    param childrens : Array(String)
-    param childrens_ages : Array(Int32)
-
-    schema Address do
-      param street : String, size: (5..15)
-      param zip : String, match: /\d{5}/
-      param city : String, size: 2, in: %w[NY NJ CA UT]
-
-      schema Location do
-        param longitude : Float32
-        param latitute : Float32
-      end
-    end
-
-    def some_method(arg)
-      ...do something
-    end
+  def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages, @last_name)
   end
 end
 ```
@@ -67,22 +69,18 @@ end
 ### Schema class methods
 
 ```crystal
-ExampleController::User.from_json(pyaload: String)
-ExampleController::User.from_yaml(pyaload: String)
-ExampleController::User.new(params: Hash(String, String))
+Example.from_json
+Example.from_urlencoded("&foo=bar")
+# Any object that responds to `.each`, `#[]?`, `#[]`, `#fetch_all?`
+Example.new(params)
 ```
 
 ### Schema instance methods
 
 ```crystal
-getters   - For each of the params
 valid?    - Bool
-validate! - True or Raise Error
+validate! - True or Raise ValidationError
 errors    - Errors(T, S)
-rules     - Rules(T, S)
-params    - Original params payload
-to_json   - Outputs JSON
-to_yaml   - Outputs YAML
 ```
 
 ## Example parsing HTTP Params (With nested params)
@@ -95,16 +93,16 @@ params = HTTP::Params.parse(
         "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
         "address.location.longitude=41.085651&address.location.latitute=-73.858467"
       )
-
-subject   = ExampleController.new(params.to_h)
+# HTTP::Params responds to `#[]`, `#[]?`, `#fetch_all?` and `.each`
+subject = ExampleController.new(params)
 ```
 
 Accessing the generated schemas:
 
 ```crystal
-user      = subject.user     - ExampleController
-address   = user.address     - ExampleController::Address
-location  = address.location - ExampleController::Address::Location
+user      = subject.user     - Example
+address   = user.address     - Example::Address
+location  = address.location - Example::Address::Location
 ```
 
 ## Example parsing from JSON
@@ -119,60 +117,16 @@ json = %({ "user": {
       "childrens_ages": [9, 12]
     }})
 
-user = ExampleController.from_json(json, "user")
+user = Example.from_json(json, "user")
 ```
-
-## Registring Schema Custom Converters
-
-Custom converters allows you to define how to parse your custom data types. To Define a custom converter simply define a `convert` method for your custom type. 
-
-For example lets say we want to convert a `string` time representation to `Time` type.
-
-```crystal
-module Schema
-  module Cast(T)
-    def convert(asType : Time.class)
-      asType.parse(@value, "%m-%d-%Y", Time::Location::UTC)
-    end
-  end
-end
-```
-
-or 
-
-```crystal
-class CustomType
-  include Schema::Cast(CustomType)
-
-  def initialize(@value : String)
-  end
-
-  def value
-    convert(self.class)
-  end
-
-  def convert(asType : self.class)
-    @value.split(",").map { |i| i.to_i32 }
-  end
-end
-```
-
-The implicit `@value` contains the actual string to parse as `Time`.
-
-The definition of the `convert(asType : Time.class)` method registers the custome converter. 
-
-To use your converter simply define `param` with your custom type and the schema framework will do the rest.
-
-```crystal
-param ended_at : Time
-```
-
 ## Validations
 
 You can also perform validations for existing objects without the use of Schemas.
 
 ```crystal
 class User < Model
+  include Schema::Validation
+
   property email : String
   property name : String
   property age : Int32
@@ -180,19 +134,15 @@ class User < Model
   property childrens : Array(String)
   property childrens_ages : Array(Int32)
 
-  validation do
-    # To use a custom validator, this will enable the predicate `unique_record`
-    # which is derived from the class name minus `validator`
-    use UniqueRecordValidator
+  # To use a custom validator, this will enable the predicate `unique_record`
+  # which is derived from the class name minus `validator`
+  use UniqueRecordValidator
 
-    # Use the `custom` class name predicate as follow
-    validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true
-    validate name, size: (1..20)
-    validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old"
-    validate alive, eq: true
-    validate childrens
-    validate childrens_ages
-  end
+  # Use the `custom` class name predicate as follow
+  validate email, match: /\w+@\w+\.\w{2,3}/, message: "Email must be valid!", unique_record: true
+  validate name, size: (1..20)
+  validate age, gte: 18, lte: 25, message: "Must be 24 and 30 years old"
+  validate alive, eq: true
 
   def initialize(@email, @name, @age, @alive, @childrens, @childrens_ages)
   end
@@ -204,14 +154,30 @@ end
 Simply create a class `{Name}Validator` with the following signature:
 
 ```crystal
-class UniqueRecordValidator
-  getter :record, :message
+class EmailValidator < Schema::Validator
+  include Schema::Validators
+  getter :record, :field, :message
 
-  def initialize(@record : UserModel, @message : String)
+  def initialize(@record : UserModel)
+    @field = :email
+    @message = "Email must be valid!"
   end
 
-  def valid?
-    false
+  def valid? : Array(Schema::Error)
+    [] of Schema::Error
+  end
+end
+
+class UniqueRecordValidator < Schema::Validator
+  getter :record, :field, :message
+
+  def initialize(@record : UserModel)
+    @field = :email
+    @message = "Record must be unique!"
+  end
+
+  def valid? : Array(Schema::Error)
+    [] of Schema::Error
   end
 end
 ```
@@ -231,9 +197,8 @@ class User < Model
   property childrens : Array(String)
   property childrens_ages : Array(Int32)
 
-  validation do
     ...
-    params password : String, presence: true
+    validate password : String, presence: true
 
     predicates do
       def presence?(password : String, _other : String) : Bool

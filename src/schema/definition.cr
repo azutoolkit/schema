@@ -58,7 +58,7 @@ module Schema
       {% end %}
     end
 
-    def initialize(*, __http_params_from_schema http_params : HTTP::Params, __path_from_schema path = [] of String)
+    def initialize(*, __http_params_from_schema http_params, __path_from_schema path = [] of String)
       {% begin %}
         {% settings = @type.annotation(::Schema::Settings) || {strict: false, unmapped: false} %}
         {% if settings[:strict] || settings[:unmapped] %}

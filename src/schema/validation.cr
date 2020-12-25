@@ -24,7 +24,7 @@ module Schema
     macro create_validator(type_validator)
       {% type_validator = type_validator.resolve %}
     
-      module Validator({{type_validator}})
+      class Validator
         def self.validate(instance : {{type_validator}})
           errors = Array(Schema::Error).new
           rules = Array(Schema::Constraint | Schema::Validator).new
@@ -67,7 +67,7 @@ module Schema
       end
 
       def errors
-        Validator({{ @type }}).validate(self)
+        Validator.validate(self)
       end
 
       macro finished

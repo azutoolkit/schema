@@ -16,9 +16,10 @@ describe Schema::Definition do
     p.add("address[location][latitude]", "-73.858467")
     p.add("address[location][useful]", "true")
   end
-  
+
   it "defines schema from Hash(String, String)" do
     user = Example.from_urlencoded(params)
+    user.should be_a Example
   end
 
   it "defines a schema from JSON" do
@@ -76,5 +77,7 @@ describe Schema::Definition do
     }})
 
     subject = Example.from_json(json, "user")
+
+    subject.should be_a Example
   end
 end

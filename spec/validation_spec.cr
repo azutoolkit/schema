@@ -72,20 +72,11 @@ describe Schema::Validation do
 
     it "it validates the user" do
       subject.valid?.should be_falsey
-      subject.errors.map(&.message).should eq ["Email must be valid!", "Age must be 18 and 25 years old", "Last name is invalid"]
-    end
-  end
-
-  context "when adding your own errors" do
-    subject = UserModel.new(
-      "bad", "Fake name", 25, true, ["Child 1", "Child 2"], [9, 12], "JOhn"
-    )
-
-    it "adds custom rules" do
-      subject.add_custom_rule
-      p subject.errors
-      subject.errors.size.should eq 4
-      subject.errors.map(&.message).should contain "fake error message"
+      subject.errors.map(&.message).should eq [
+        "Email must be valid!",
+        "Age must be 18 and 25 years old",
+        "Last name is invalid",
+      ]
     end
   end
 end

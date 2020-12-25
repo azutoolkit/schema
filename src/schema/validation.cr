@@ -19,7 +19,7 @@ module Schema
       {% SCHEMA_VALIDATORS << validator %}
       {% end %}
     end
-  
+
     macro validate(attribute, **options)
       {% SCHEMA_VALIDATIONS[attribute] = options %}
     end
@@ -49,11 +49,11 @@ module Schema
           {% end %}
           
           rules << Schema::Constraint.new do |rule, errors|
-            {% for name, options in type_validator.constant(:SCHEMA_VALIDATIONS)  %}
+            {% for name, options in type_validator.constant(:SCHEMA_VALIDATIONS) %}
               {% for predicate, expected_value in options %}
                 {% if !["message"].includes?(predicate.stringify) %}
                 unless rule.{{predicate.id}}?(instance.{{name.id}}, {{expected_value}})
-                  errors << Schema::Error.new(:{{name.id}}, {{options["message"] || "Invalid field: " +  name.stringify}}) 
+                  errors << Schema::Error.new(:{{name.id}}, {{options["message"] || "Invalid field: " + name.stringify}}) 
                 end
                 {% end %}
               {% end %}

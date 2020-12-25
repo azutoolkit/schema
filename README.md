@@ -4,9 +4,9 @@
 
 ![Crystal CI](https://github.com/eliasjpr/schema/workflows/Crystal%20CI/badge.svg)
 
-Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee params when parsing HTTP parameters or Hash(String, String) for a request moreover; Schemas is to resolve precisely this problem with the added benefit of performing business rules validation to have the params adhere to a `"business schema."`
+Schemas come to solve a simple problem. Sometimes we would like to have type-safe guarantee parameters when parsing HTTP requests or Hash(String, String) for a request. Schema shard resolve precisely this problem with the added benefit of enabling self validating schemas that can be applied to any object, requiring little to no boilerplate code making you more productive from the moment you use this shard.
 
-Schemas are beneficial, in my opinion, ideal, for when defining API Requests, Web Forms, JSON, YAML.  Schema-Validation Takes a different approach and focuses a lot on explicitness, clarity, and precision of validation logic. It is designed to work with any data input, whether it’s a simple hash, an array or a complex object with deeply nested data.
+Self validating Schemas are beneficial, and in my opinion, ideal, for when defining API Requests, Web Forms, JSON.  Schema-Validation Takes a different approach and focuses a lot on explicitness, clarity, and precision of validation logic. It is designed to work with any data input, whether it’s a simple hash, an array or a complex object with deeply nested data.
 
 Each validation is encapsulated by a simple, stateless predicate that receives some input and returns either true or false. Those predicates are encapsulated by rules which can be composed together using predicate logic, meaning you can use the familiar logic operators to build up a validation schema.
 
@@ -26,7 +26,7 @@ dependencies:
 require "schema"
 ```
 
-## Defining Self Validated Schemas
+### Defining Self Validated Schemas
 
 Schemas are defined as value objects, meaning structs, which are NOT mutable,
 making them ideal to pass schema objects as arguments to constructors.
@@ -83,16 +83,49 @@ validate! - True or Raise ValidationError
 errors    - Errors(T, S)
 ```
 
-## Example parsing HTTP Params (With nested params)
+### Example parsing HTTP Params (With nested params)
+
+Below find a list of the supported params parsing structure and it's corresponding representation in Query String or `application/x-www-form-urlencoded` form data. 
 
 ```crystal
-params = HTTP::Params.parse(
-        "email=test@example.com&name=john&age=24&alive=true&" +
-        "childrens=Child1,Child2&childrens_ages=1,2&" +
-        # Nested params
-        "address.city=NY&address.street=Sleepy Hollow&address.zip=12345&" +
-        "address.location.longitude=41.085651&address.location.latitute=-73.858467"
-      )
+http_params = HTTP::Params.build do |p|
+  p.add("string", "string_value")
+  p.add("optional_string", "optional_string_value")
+  p.add("string_with_default", "string_with_default_value")
+  p.add("int", "1")
+  p.add("optional_int", "2")
+  p.add("int_with_default", "3")
+  p.add("enum", "Foo")
+  p.add("optional_enum", "Bar")
+  p.add("enum_with_default", "Baz")
+  p.add("array[]", "foo")
+  p.add("array[]", "bar")
+  p.add("array[]", "baz")
+  p.add("optional_array[]", "foo")
+  p.add("optional_array[]", "bar")
+  p.add("array_with_default[]", "foo")
+  p.add("hash[foo]", "1")
+  p.add("hash[bar]", "2")
+  p.add("optional_hash[foo][]", "3")
+  p.add("optional_hash[foo][]", "4")
+  p.add("optional_hash[bar][]", "5")
+  p.add("hash_with_default[foo]", "5")
+  p.add("tuple[]", "foo")
+  p.add("tuple[]", "2")
+  p.add("tuple[]", "3.5")
+  p.add("boolean", "1")
+  p.add("optional_boolean", "false")
+  p.add("boolean_with_default", "true")
+  p.add("nested[foo]", "1")
+  p.add("nested[bar]", "3")
+  p.add("nested[baz][]", "foo")
+  p.add("nested[baz][]", "bar")
+end
+```
+
+```crystal
+params = HTTP::Params.parse("email=test%40example.com&name=john&age=24&alive=true&childrens%5B%5D=Child1%2CChild2&childrens_ages%5B%5D=12&childrens_ages%5B%5D=18&address%5Bcity%5D=NY&address%5Bstreet%5D=Sleepy+Hollow&address%5Bzip%5D=12345&address%5Blocation%5D%5Blongitude%5D=41.085651&address%5Blocation%5D%5Blatitude%5D=-73.858467&address%5Blocation%5D%5Buseful%5D=true")
+
 # HTTP::Params responds to `#[]`, `#[]?`, `#fetch_all?` and `.each`
 subject = ExampleController.new(params)
 ```
@@ -245,8 +278,8 @@ API subject to change until marked as released version
 
 Things left to do:
 
--   [x] Validate nested - When calling `valid?` validates inner schemas.
--   [x] Build nested yaml/json- Currently json and yaml do not support the sub schemas.
+-   [x] Validate nested - When calling `valid?` validates schemas.
+-   [x] Build nested `json`- Currently `json` do not support the sub schemas.
 -   [x] Document Custom Converter for custom types.
 
 ## Contributing

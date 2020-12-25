@@ -31,5 +31,3 @@ struct Example
     getter useful : Bool
   end
 end
-
-

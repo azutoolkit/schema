@@ -167,8 +167,7 @@ class User < Model
   property childrens : Array(String)
   property childrens_ages : Array(Int32)
 
-  # To use a custom validator, this will enable the predicate `unique_record`
-  # which is derived from the class name minus `validator`
+  # To use a custom validator. UniqueRecordValidator will be initialized with an `User` instance
   use UniqueRecordValidator
 
   # Use the `custom` class name predicate as follow
@@ -182,13 +181,12 @@ class User < Model
 end
 ```
 
-## Custom Validations
+### Custom Validations
 
 Simply create a class `{Name}Validator` with the following signature:
 
 ```crystal
 class EmailValidator < Schema::Validator
-  include Schema::Validators
   getter :record, :field, :message
 
   def initialize(@record : UserModel)
@@ -215,11 +213,9 @@ class UniqueRecordValidator < Schema::Validator
 end
 ```
 
-Notice that `unique_record:` corresponds to `UniqueRecord`Validator.
+### Defining Predicates
 
-### Defining Your Own Predicates
-
-You can define your custom predicates by simply creating a custom validator or creating methods in the `Schema::Validators` module ending with `?` and it should return a `boolean`. For example:
+You can define your custom predicates by simply creating a custom validator or creating methods in the `Schema::Predicates` module ending with `?` and it should return a `boolean`. For example:
 
 ```crystal
 class User < Model
@@ -230,13 +226,16 @@ class User < Model
   property childrens : Array(String)
   property childrens_ages : Array(Int32)
 
-    ...
-    validate password : String, presence: true
+  ...
 
-    predicates do
-      def presence?(password : String, _other : String) : Bool
-        !value.nil?
-      end
+  # Uses a `presense` predicate
+  validate password : String, presence: true
+
+  # Use the `predicates` macro to define predicate methods
+  predicates do
+    # Presence Predicate Definition
+    def presence?(password : String, _other : String) : Bool
+      !value.nil?
     end
   end
 
@@ -245,14 +244,24 @@ class User < Model
 end
 ```
 
+### Differences: Custom Validator vs Predicates
+
 The differences between a custom validator and a method predicate are:
 
--   Custom validators receive an instance of the object as a `record` instance var.
--   Custom validators allow for more control over validations.
--   Predicates are assertions against the class properties (instance var).
--   Predicates matches property value with predicate value.
+**Custom Validators**
+-   Must be inherited from `Schema::Validator` abstract
+-   Receives an instance of the object as a `record` instance var.
+-   Must have a `:field` and `:message` defined.
+-   Must implement a `def valid? : Array(Schema::Error)` method.
+
+**Predicates**
+-   Assertions of the property value against an expected value.
+-   Predicates are light weight boolean methods.
+-   Predicates methods must be defined as `def {predicate}?(property_value, expected_value) : Bool` .
 
 ### Built in Predicates
+
+These are the current available predicates.
 
 ```crystal
 gte   - Greater Than or Equal To
@@ -265,22 +274,14 @@ regex - Regular Expression
 eq    - Equal
 ```
 
+> **CONTRIBUTE** - Add more predicates to this shards by contributing a Pull Request. 
+
 Additional params
 
 ```crystal
 message - Error message to display
 nilable - Allow nil, true or false
 ```
-
-## Development (Help Wanted!)
-
-API subject to change until marked as released version
-
-Things left to do:
-
--   [x] Validate nested - When calling `valid?` validates schemas.
--   [x] Build nested `json`- Currently `json` do not support the sub schemas.
--   [x] Document Custom Converter for custom types.
 
 ## Contributing
 

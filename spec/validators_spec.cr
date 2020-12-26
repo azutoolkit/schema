@@ -1,7 +1,7 @@
 require "./spec_helper"
-include Schema::Validators
+include Schema::Predicates
 
-describe Schema::Validators do
+describe Schema::Predicates do
   describe "#eq?" do
     it { eq?(1, 1).should be_true }
     it { eq?("one", "one").should be_true }

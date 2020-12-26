@@ -38,7 +38,6 @@ class UserModel
 end
 
 class EmailValidator < Schema::Validator
-  include Schema::Validators
   getter :record, :field, :message
 
   def initialize(@record : UserModel)

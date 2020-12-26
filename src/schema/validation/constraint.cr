@@ -1,6 +1,7 @@
 module Schema
   class Constraint
-    include Schema::Validators
+    include Schema::Predicates
+
     @errors = Array(Schema::Error).new
 
     def initialize(&block : Constraint, Array(Schema::Error) -> Nil)

@@ -1,4 +1,4 @@
-require "./validation/validators"
+require "./validation/predicates"
 require "./validation/error"
 require "./validation/validator"
 require "./validation/constraint"
@@ -25,14 +25,14 @@ module Schema
     end
 
     macro predicates
-      module Schema::Validators
+      module Schema::Predicates
         {{yield}}
       end
     end
 
     macro create_validator(type_validator)
       {% type_validator = type_validator.resolve %}
-    
+
       class Validator
         def self.validate(instance : {{type_validator}})
           errors = Array(Schema::Error).new
@@ -42,18 +42,18 @@ module Schema
             errors + rule.valid?
           end
         end
-    
+
         private def self.validations(rules, instance)
           {% for validtor in type_validator.constant(:SCHEMA_VALIDATORS) %}
           rules << {{validtor}}.new(instance)
           {% end %}
-          
+
           rules << Schema::Constraint.new do |rule, errors|
             {% for name, options in type_validator.constant(:SCHEMA_VALIDATIONS) %}
               {% for predicate, expected_value in options %}
                 {% if !["message"].includes?(predicate.stringify) %}
                 unless rule.{{predicate.id}}?(instance.{{name.id}}, {{expected_value}})
-                  errors << Schema::Error.new(:{{name.id}}, {{options["message"] || "Invalid field: " + name.stringify}}) 
+                  errors << Schema::Error.new(:{{name.id}}, {{options["message"] || "Invalid field: " + name.stringify}})
                 end
                 {% end %}
               {% end %}

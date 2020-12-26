@@ -1,6 +1,6 @@
 module Schema
   abstract class Validator
-    include Schema::Validators
+    include Schema::Predicates
 
     def initialize(@record)
     end

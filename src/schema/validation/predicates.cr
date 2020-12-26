@@ -1,7 +1,7 @@
-require "./validators/*"
+require "./predicates/*"
 
 module Schema
-  module Validators
+  module Predicates
     include Equal
     include Exclusion
     include GreaterThan

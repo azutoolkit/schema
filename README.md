@@ -1,4 +1,4 @@
-# Schema-Validations
+# Schema
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bcab4bfe3c9c4c45a832fd724aa1ffea)](https://app.codacy.com/manual/eliasjpr/schema?utm_source=github.com&utm_medium=referral&utm_content=eliasjpr/schema&utm_campaign=Badge_Grade_Dashboard)
 
@@ -17,7 +17,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   schema:
-    github: eliasjpr/schema-validations
+    github: azutoolkit/schem
 ```
 
 ## Usage

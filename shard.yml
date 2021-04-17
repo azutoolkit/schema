@@ -1,10 +1,10 @@
 name: schema
-version: 0.2.0
+version: 0.2.1
 
 authors:
   - Elias J. Perez <eliasjpr@gmail.com>
 
-crystal: 0.26.1
+crystal: ">= 0.35.0"
 
 license: MIT
 

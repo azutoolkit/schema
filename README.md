@@ -1,3 +1,5 @@
+<div style="text-align:center"><img src="https://raw.githubusercontent.com/azutoolkit/schema/master/schema2.png" /></div>
+
 # Schema
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bcab4bfe3c9c4c45a832fd724aa1ffea)](https://app.codacy.com/manual/eliasjpr/schema?utm_source=github.com&utm_medium=referral&utm_content=eliasjpr/schema&utm_campaign=Badge_Grade_Dashboard)

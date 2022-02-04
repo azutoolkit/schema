@@ -71,6 +71,9 @@ describe Schema::Validation do
 
     it "it validates the user" do
       subject.valid?.should be_falsey
+      expect_raises(Schema::Validation::ValidationError) do
+        subject.validate!
+      end
       subject.errors.map(&.message).should eq [
         "Email must be valid!",
         "Age must be 18 and 25 years old",

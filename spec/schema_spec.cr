@@ -20,5 +20,6 @@ describe "Integration test of Definitions and Validations" do
   it "builds from HTTP::Params and validates" do
     example = Example.from_urlencoded(params)
     example.valid?.should be_true
+    example.validate!.should be_true
   end
 end

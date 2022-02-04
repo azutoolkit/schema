@@ -72,7 +72,8 @@ module Schema
       end
 
       def validate!
-        valid? || raise ValidationError.new(errors)
+        errs = errors
+        errs.empty? || raise ValidationError.new(errs)
       end
 
       def errors

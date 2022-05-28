@@ -19,7 +19,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   schema:
-    github: azutoolkit/schem
+    github: azutoolkit/schema
 ```
 
 ## Usage

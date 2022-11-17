@@ -5,22 +5,63 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+  workflow_dispatch:
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     container:
       image: crystallang/crystal
-
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: shards install
-      
     - name: Check code style
       run: crystal tool format
-    
     - name: Run tests
       run: crystal spec
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    if: ${{ success() }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Compute Release Version
+        id: semver
+        uses: paulhatch/semantic-version@v4.0.2
+        with:
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          minor_pattern: "(MINOR)"
+          format: "${major}.${minor}.${patch}"
+          bump_each_commit: false
+
+      - name: Bump Shard Version
+        id: bump-shard
+        uses: fjogeleit/yaml-update-action@v0.12.1
+        with:
+          valueFile: shard.yml
+          propertyPath: version
+          value: ${{steps.semver.outputs.version}}
+          branch: master
+          masterBranchName: master
+          updateFile: true
+          createPR: false
+          message: Set shard version ${{ steps.semver.outputs.version }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{steps.semver.outputs.version_tag}}
+          release_name: Release v${{steps.semver.outputs.version}}
+          draft: false
+          prerelease: false
+
+

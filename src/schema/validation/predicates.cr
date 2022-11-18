@@ -12,5 +12,6 @@ module Schema
     include RegularExpression
     include Size
     include Presence
+    include Required
   end
 end

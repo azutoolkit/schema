@@ -6,7 +6,8 @@ describe "Integration test of Definitions and Validations" do
     p.add("name", "john")
     p.add("age", "24")
     p.add("alive", "true")
-    p.add("childrens[]", "Child1,Child2")
+    p.add("childrens[]", "Child1")
+    p.add("childrens[]", "Child2")
     p.add("childrens_ages[]", "12")
     p.add("childrens_ages[]", "18")
     p.add("address[city]", "NY")
@@ -15,6 +16,7 @@ describe "Integration test of Definitions and Validations" do
     p.add("address[location][longitude]", "41.085651")
     p.add("address[location][latitude]", "-73.858467")
     p.add("address[location][useful]", "true")
+    p.add("subnested[0][name]", "hello")
   end
 
   it "builds from HTTP::Params and validates" do

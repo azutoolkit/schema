@@ -6,7 +6,8 @@ describe Schema::Definition do
     p.add("name", "john")
     p.add("age", "24")
     p.add("alive", "true")
-    p.add("childrens[]", "Child1,Child2")
+    p.add("childrens[]", "Child1")
+    p.add("childrens[]", "Child2")
     p.add("childrens_ages[]", "12")
     p.add("childrens_ages[]", "18")
     p.add("address[city]", "NY")
@@ -15,10 +16,11 @@ describe Schema::Definition do
     p.add("address[location][longitude]", "41.085651")
     p.add("address[location][latitude]", "-73.858467")
     p.add("address[location][useful]", "true")
+    p.add("subnested[0][name]", "hello")
   end
 
   it "defines schema from Hash(String, String)" do
-    user = Example.from_urlencoded(params)
+    user = Example.from_query(params)
     user.should be_a Example
   end
 
@@ -30,6 +32,9 @@ describe Schema::Definition do
       "alive": true,
       "childrens": ["Child 1", "Child 2"],
       "childrens_ages": [9, 12],
+      "subnested": [
+        { "name": "hello"}
+      ],
       "address": {
         "city": "NY",
         "street": "sleepy",
@@ -64,6 +69,9 @@ describe Schema::Definition do
       "alive": true,
       "childrens": ["Child 1", "Child 2"],
       "childrens_ages": [9, 12],
+      "subnested": [
+        { "name": "hello"}
+      ],
       "address": {
         "city": "NY",
         "street": "slepy",

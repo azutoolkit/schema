@@ -64,7 +64,7 @@ module Schema
     end
 
     macro included
-      SCHEMA_VALIDATORS = [] of Nil
+      SCHEMA_VALIDATORS  = [] of Nil
       SCHEMA_VALIDATIONS = {} of Nil => Nil
 
       def valid?

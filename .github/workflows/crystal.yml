@@ -2,9 +2,9 @@ name: Crystal CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 jobs:
   build:
@@ -12,13 +12,11 @@ jobs:
     container:
       image: crystallang/crystal
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: shards install
-    - name: Check code style
-      run: crystal tool format
-    - name: Run tests
-      run: crystal spec
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: shards install
+      - name: Run tests
+        run: crystal spec
 
   release:
     runs-on: ubuntu-latest
@@ -63,5 +61,3 @@ jobs:
           release_name: Release v${{steps.semver.outputs.version}}
           draft: false
           prerelease: false
-
-

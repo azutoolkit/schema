@@ -2,9 +2,9 @@ name: Crystal CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 jobs:
   build:
@@ -12,13 +12,11 @@ jobs:
     container:
       image: crystallang/crystal
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: shards install
-    - name: Check code style
-      run: crystal tool format
-    - name: Run tests
-      run: crystal spec
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: shards install
+      - name: Run tests
+        run: crystal spec
 
   release:
     runs-on: ubuntu-latest
@@ -37,20 +35,24 @@ jobs:
           tag_prefix: "v"
           major_pattern: "(MAJOR)"
           minor_pattern: "(MINOR)"
+          # A string to determine the format of the version output
           format: "${major}.${minor}.${patch}"
+          # If this is set to true, *every* commit will be treated as a new version.
           bump_each_commit: false
 
       - name: Bump Shard Version
         id: bump-shard
-        uses: fjogeleit/yaml-update-action@v0.12.1
+        uses: fjogeleit/yaml-update-action@master
         with:
           valueFile: shard.yml
           propertyPath: version
           value: ${{steps.semver.outputs.version}}
-          branch: master
-          masterBranchName: master
+          commitChange: true
           updateFile: true
+          targetBranch: master
+          masterBranchName: master
           createPR: false
+          branch: master
           message: Set shard version ${{ steps.semver.outputs.version }}
 
       - name: Create Release
@@ -63,5 +65,3 @@ jobs:
           release_name: Release v${{steps.semver.outputs.version}}
           draft: false
           prerelease: false
-
-

@@ -1,5 +1,5 @@
 name: schema
-version: 0.2.4
+version: 0.2.5
 authors:
   - Elias J. Perez <eliasjpr@gmail.com>
 crystal: '>= 0.35.0'

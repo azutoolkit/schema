@@ -17,7 +17,7 @@ struct Time
 
     # Parse `Time` from an HTTP param as time timestamp.
     def self.from_http_param(value : String) : Time
-      Time.parse(time, FORMAT)
+      Time.parse(value, FORMAT, Time::Location::UTC)
     rescue ArgumentError
       raise TypeCastError.new
     end
